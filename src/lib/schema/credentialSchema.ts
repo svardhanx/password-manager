@@ -8,7 +8,6 @@ export const credentialSchema = z.object({
     .refine((value) => !value || /^https:\/\/.+/.test(value), {
       message: "Website link must be a valid HTTPS URL",
     }),
-
   websiteName: z
     .string()
     .trim()

@@ -10,6 +10,7 @@
   --error: #de3333;
   --warning: #f59e0b;
   --info: #2e75d4;
+  --white-border: #e2e8f0;
 }
 
 @theme inline {
@@ -24,6 +25,7 @@
   --color-error: var(--error);
   --color-warning: var(--warning);
   --color-info: var(--info);
+  --color-white-border: var(--white-border);
 }
 
 /* @media (prefers-color-scheme: dark) {
@@ -44,5 +46,5 @@ body {
 }
 
 .card-base {
-  @apply bg-white rounded-md p-4 border border-[#E2E8F0] shadow;
+  @apply bg-white rounded-md p-4 border border-white-border shadow;
 }

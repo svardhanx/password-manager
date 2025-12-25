@@ -9,6 +9,7 @@ import { Provider } from "react-redux";
 import store from "@/store/store";
 import ApplicationLayout from "./ApplicationLayout";
 import "@mantine/core/styles.css";
+import { Toaster } from "react-hot-toast";
 
 export default function ClientProviders({
   children,
@@ -40,6 +41,8 @@ export default function ClientProviders({
     <Provider store={store}>
       <MantineProvider theme={theme}>
         <ApplicationLayout>{children}</ApplicationLayout>
+        <Toaster />
+        {/* {children} */}
       </MantineProvider>
     </Provider>
   );

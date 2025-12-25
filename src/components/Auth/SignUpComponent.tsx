@@ -2,7 +2,6 @@
 
 import { loginSchema } from "@/lib/schema/loginSchema";
 import { LoginFormFields } from "@/types/formFields";
-import { BRAND_NAME } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, PasswordInput, TextInput } from "@mantine/core";
 import { KeyRound } from "lucide-react";
@@ -14,7 +13,7 @@ const defaultValues = {
   password: "",
 };
 
-export default function LoginComponent() {
+export default function SignUpComponent() {
   const {
     control,
     handleSubmit,
@@ -25,8 +24,8 @@ export default function LoginComponent() {
     resolver: zodResolver(loginSchema),
   });
 
-  function signInHandler(data: LoginFormFields) {
-    console.log("SignIn", data);
+  function signUpHandler(data: LoginFormFields) {
+    console.log("SignUp", data);
     reset();
   }
 
@@ -36,14 +35,14 @@ export default function LoginComponent() {
         <KeyRound className="text-primary" />
       </div>
       <section className="flex flex-col items-center justify-center w-full p-2">
-        <h2 className="text-2xl text-heading font-bold">{BRAND_NAME}</h2>
+        <h2 className="text-2xl text-heading font-bold">Create Your Vault</h2>
         <p className="text-sm text-sub-heading font-normal">
-          Securely access your password vault.
+          Choose a strong master password to secure your new vault.
         </p>
       </section>
       <form
         className="flex flex-col items-center justify-center gap-3 text-black w-full"
-        onSubmit={handleSubmit(signInHandler)}
+        onSubmit={handleSubmit(signUpHandler)}
       >
         <div className="w-full">
           <Controller
@@ -79,14 +78,14 @@ export default function LoginComponent() {
           />
         </div>
         <Button fullWidth type="submit">
-          Login
+          Signup
         </Button>
       </form>
       <p className="w-full text-sm text-black text-center">
-        <Link href={"/auth/signup"} className="underline text-primary">
-          Click here
+        Already have an account?
+        <Link href={"/auth/login"} className="underline text-primary">
+          Login
         </Link>{" "}
-        to signup!
       </p>
     </div>
   );

@@ -13,7 +13,7 @@ import { closeAddCredentialModal } from "@/store/slices/credentials";
 import { Controller, useForm } from "react-hook-form";
 import { CredentialType } from "@/types/password-credentials";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { credentialSchema } from "@/lib/credentialSchema";
+import { credentialSchema } from "@/lib/schema/credentialSchema";
 
 const defaultValues: CredentialType = {
   websiteName: "",
