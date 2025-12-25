@@ -28,6 +28,7 @@ async function encryptionKeyGenerator(
   );
 
   //   console.log(aesKey);
+
   return aesKey;
 }
 

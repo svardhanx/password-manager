@@ -25,7 +25,7 @@ export default function LoginComponent() {
     resolver: zodResolver(loginSchema),
   });
 
-  function signInHandler(data: LoginFormFields) {
+  async function signInHandler(data: LoginFormFields) {
     console.log("SignIn", data);
     reset();
   }

@@ -4,6 +4,7 @@ import { ColorSchemeScript, mantineHtmlProps } from "@mantine/core";
 import ClientProviders from "../components/ClientProviders";
 import { BRAND_NAME } from "@/utils/constants";
 import "./globals.css";
+import { ReactChildren } from "@/types/react-children-type";
 
 const inter = Inter({
   subsets: ["cyrillic-ext"],
@@ -15,11 +16,7 @@ export const metadata: Metadata = {
   description: `${BRAND_NAME} - A Password Manager`,
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: ReactChildren) {
   return (
     <html lang="en" {...mantineHtmlProps}>
       <head>

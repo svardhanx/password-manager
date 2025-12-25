@@ -9,3 +9,17 @@ export const loginSchema = z.object({
     .min(8, "Password must be at least 8 characters")
     .max(30, "Password cannot be greater than 30 characters"),
 });
+
+export const signupSchema = z.object({
+  username: z
+    .string()
+    .nonempty("Username is required")
+    .min(3, "Username must be at least 3 characters"),
+  email: z.email(),
+  password: z
+    .string()
+    .trim()
+    .nonempty("Password is required")
+    .min(8, "Password must be at least 8 characters")
+    .max(30, "Password cannot be greater than 30 characters"),
+});

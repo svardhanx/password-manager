@@ -10,12 +10,10 @@ import store from "@/store/store";
 import ApplicationLayout from "./ApplicationLayout";
 import "@mantine/core/styles.css";
 import { Toaster } from "react-hot-toast";
+import { ReactChildren } from "@/types/react-children-type";
+import VaultProvider from "@/context/VaultProvider";
 
-export default function ClientProviders({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function ClientProviders({ children }: ReactChildren) {
   const theme: MantineThemeOverride = createTheme({
     colors: {
       primary: [
@@ -40,7 +38,9 @@ export default function ClientProviders({
   return (
     <Provider store={store}>
       <MantineProvider theme={theme}>
-        <ApplicationLayout>{children}</ApplicationLayout>
+        <VaultProvider>
+          <ApplicationLayout>{children}</ApplicationLayout>
+        </VaultProvider>
         <Toaster />
       </MantineProvider>
     </Provider>

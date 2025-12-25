@@ -1,7 +1,7 @@
 "use client";
 
-import { loginSchema } from "@/lib/schema/loginSchema";
-import { LoginFormFields } from "@/types/formFields";
+import { signupSchema } from "@/lib/schema/loginSchema";
+import { SignupFormFields } from "@/types/formFields";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, PasswordInput, TextInput } from "@mantine/core";
 import { KeyRound } from "lucide-react";
@@ -11,6 +11,7 @@ import { Controller, useForm } from "react-hook-form";
 const defaultValues = {
   email: "",
   password: "",
+  username: "",
 };
 
 export default function SignUpComponent() {
@@ -19,12 +20,12 @@ export default function SignUpComponent() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<LoginFormFields>({
+  } = useForm<SignupFormFields>({
     defaultValues,
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(signupSchema),
   });
 
-  function signUpHandler(data: LoginFormFields) {
+  function signUpHandler(data: SignupFormFields) {
     console.log("SignUp", data);
     reset();
   }
@@ -44,6 +45,22 @@ export default function SignUpComponent() {
         className="flex flex-col items-center justify-center gap-3 text-black w-full"
         onSubmit={handleSubmit(signUpHandler)}
       >
+        <div className="w-full">
+          <Controller
+            control={control}
+            name="username"
+            render={({ field }) => {
+              return (
+                <TextInput
+                  {...field}
+                  placeholder="Enter your username"
+                  label="Username"
+                  error={errors.username?.message}
+                />
+              );
+            }}
+          />
+        </div>
         <div className="w-full">
           <Controller
             control={control}
@@ -82,10 +99,10 @@ export default function SignUpComponent() {
         </Button>
       </form>
       <p className="w-full text-sm text-black text-center">
-        Already have an account?
+        Already have an account?{" "}
         <Link href={"/auth/login"} className="underline text-primary">
           Login
-        </Link>{" "}
+        </Link>
       </p>
     </div>
   );
