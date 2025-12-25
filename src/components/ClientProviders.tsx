@@ -42,7 +42,6 @@ export default function ClientProviders({
       <MantineProvider theme={theme}>
         <ApplicationLayout>{children}</ApplicationLayout>
         <Toaster />
-        {/* {children} */}
       </MantineProvider>
     </Provider>
   );
