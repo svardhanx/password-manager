@@ -1,8 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import commonReducer from "./slices/common";
+import credentialsReducer from "./slices/credentials";
 
 const store = configureStore({
-  reducer: { common: commonReducer },
+  reducer: { common: commonReducer, credentials: credentialsReducer },
   devTools: true,
 });
 

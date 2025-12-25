@@ -9,7 +9,7 @@ export default function UnlockVaultComponent() {
   const { control } = useForm({ defaultValues: { master_password: "" } });
 
   return (
-    <div className="card-base flex flex-col gap-3 items-center justify-center w-lg p-3 text-black">
+    <div className="card-base flex flex-col gap-3 items-center justify-center w-lg p-3 text-black h-full">
       <div className="rounded-full bg-primary/15 p-4">
         <KeyRound className="text-primary" />
       </div>

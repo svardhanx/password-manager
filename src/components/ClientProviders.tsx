@@ -7,6 +7,8 @@ import {
 } from "@mantine/core";
 import { Provider } from "react-redux";
 import store from "@/store/store";
+import ApplicationLayout from "./ApplicationLayout";
+import "@mantine/core/styles.css";
 
 export default function ClientProviders({
   children,
@@ -36,7 +38,9 @@ export default function ClientProviders({
 
   return (
     <Provider store={store}>
-      <MantineProvider theme={theme}>{children}</MantineProvider>
+      <MantineProvider theme={theme}>
+        <ApplicationLayout>{children}</ApplicationLayout>
+      </MantineProvider>
     </Provider>
   );
 }

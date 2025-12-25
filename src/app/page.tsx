@@ -1,7 +1,5 @@
-"use client";
-
-import ApplicationLayout from "@/components/ApplicationLayout";
+import Link from "next/link";
 
 export default function Home() {
-  return <ApplicationLayout />;
+  return <Link href={"/auth/login"}>Login</Link>;
 }

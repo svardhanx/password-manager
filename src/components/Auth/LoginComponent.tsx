@@ -1,6 +1,7 @@
 "use client";
 
 import { LoginFormFields } from "@/types/formFields";
+import { BRAND_NAME } from "@/utils/constants";
 import { Button, PasswordInput, TextInput } from "@mantine/core";
 import { KeyRound } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
@@ -19,7 +20,7 @@ export default function LoginComponent() {
         <KeyRound className="text-primary" />
       </div>
       <section className="flex flex-col items-center justify-center w-full p-2">
-        <h2 className="text-2xl text-heading font-bold">Vault</h2>
+        <h2 className="text-2xl text-heading font-bold">{BRAND_NAME}</h2>
         <p className="text-sm text-sub-heading font-normal">
           Securely access your password vault.
         </p>

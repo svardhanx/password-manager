@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "@mantine/core/styles.css";
 import { ColorSchemeScript, mantineHtmlProps } from "@mantine/core";
-import "./globals.css";
 import ClientProviders from "../components/ClientProviders";
+import { BRAND_NAME } from "@/utils/constants";
+import "./globals.css";
 
 const inter = Inter({
   subsets: ["cyrillic-ext"],
@@ -11,8 +11,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Vault",
-  description: "Vault - A Password Manager",
+  title: BRAND_NAME,
+  description: `${BRAND_NAME} - A Password Manager`,
 };
 
 export default function RootLayout({
@@ -26,7 +26,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <ColorSchemeScript />
       </head>
-      <body className={`${inter.className} antialiased`}>
+      <body className={`${inter.className} antialiased flex flex-col h-screen`}>
         <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
