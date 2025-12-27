@@ -7,6 +7,11 @@ import { Button, PasswordInput, TextInput } from "@mantine/core";
 import { KeyRound } from "lucide-react";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
+import { authClientSignUp } from "../../lib/auth-client";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { ErrorContext } from "better-auth/react";
 
 const defaultValues = {
   email: "",
@@ -25,8 +30,36 @@ export default function SignUpComponent() {
     resolver: zodResolver(signupSchema),
   });
 
-  function signUpHandler(data: SignupFormFields) {
-    console.log("SignUp", data);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const router = useRouter();
+
+  async function signUpHandler(data: SignupFormFields) {
+    // console.log("SignUp", data);
+
+    await authClientSignUp.email(
+      {
+        name: data.username,
+        email: data.email,
+        password: data.password,
+        callbackURL: "/auth/login",
+      },
+      {
+        onRequest: () => {
+          setLoading(true);
+        },
+        onSuccess: () => {
+          router.push("/auth/login");
+          setLoading(false);
+          toast.success("Login to continue");
+        },
+        onError: (ctx: ErrorContext) => {
+          toast.error(ctx.error.message);
+          setLoading(false);
+        },
+      }
+    );
+
     reset();
   }
 
@@ -94,7 +127,7 @@ export default function SignUpComponent() {
             }}
           />
         </div>
-        <Button fullWidth type="submit">
+        <Button fullWidth type="submit" loading={loading}>
           Signup
         </Button>
       </form>

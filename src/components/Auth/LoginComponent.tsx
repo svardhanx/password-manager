@@ -1,13 +1,19 @@
 "use client";
 
+import useVault from "@/hooks/use-vault-hook";
+import { authClientSignIn } from "@/lib/auth-client";
 import { loginSchema } from "@/lib/schema/loginSchema";
 import { LoginFormFields } from "@/types/formFields";
 import { BRAND_NAME } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, PasswordInput, TextInput } from "@mantine/core";
+import { ErrorContext } from "better-auth/react";
 import { KeyRound } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 const defaultValues = {
   email: "",
@@ -25,8 +31,37 @@ export default function LoginComponent() {
     resolver: zodResolver(loginSchema),
   });
 
+  const router = useRouter();
+
+  const { unlockVault } = useVault();
+
+  const [loading, setLoading] = useState<boolean>(false);
+
   async function signInHandler(data: LoginFormFields) {
-    console.log("SignIn", data);
+    // console.log("SignIn", data);
+
+    await authClientSignIn.email(
+      {
+        email: data.email,
+        password: data.password,
+        // rememberMe: false,
+      },
+      {
+        onRequest: () => {
+          setLoading(true);
+        },
+        onSuccess: () => {
+          unlockVault(data.password);
+          router.push("/credentials");
+          setLoading(false);
+        },
+        onError: (ctx: ErrorContext) => {
+          toast.error(ctx.error.message);
+          setLoading(false);
+        },
+      }
+    );
+
     reset();
   }
 
@@ -78,7 +113,7 @@ export default function LoginComponent() {
             }}
           />
         </div>
-        <Button fullWidth type="submit">
+        <Button fullWidth type="submit" loading={loading}>
           Login
         </Button>
       </form>

@@ -8,5 +8,8 @@ export const auth = betterAuth({
     enabled: true,
     autoSignIn: false,
   },
+  user: {
+    deleteUser: { enabled: true },
+  },
   plugins: [nextCookies()],
 });

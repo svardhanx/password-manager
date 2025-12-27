@@ -3,20 +3,20 @@
 import { redirect, usePathname } from "next/navigation";
 import Header from "./Header/Header";
 import { ReactChildren } from "@/types/react-children-type";
-import { useSession } from "@/lib/auth-client";
-import useVault from "@/hooks/use-vault-hook";
+// import { useSession } from "@/lib/auth-client";
+// import useVault from "@/hooks/use-vault-hook";
 
 export default function ApplicationLayout({ children }: ReactChildren) {
   const pathname = usePathname();
   const isAuthRoute = pathname.startsWith("/auth");
 
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
 
-  const { isUnlocked } = useVault();
+  // const { isUnlocked } = useVault();
 
-  if (session && !isUnlocked) {
-    redirect("/auth/unlock");
-  }
+  // if (session && !isUnlocked) {
+  //   redirect("/auth/unlock");
+  // }
 
   if (isAuthRoute) {
     return children;

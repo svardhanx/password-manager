@@ -8,6 +8,7 @@ import { ActionIcon, Button, Menu } from "@mantine/core";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { Copy, Ellipsis, Pencil, PlusCircle, Trash } from "lucide-react";
 import AddNewCredential from "./AddNewCredential";
+import useVault from "@/hooks/use-vault-hook";
 
 const columnHelper = createColumnHelper<CredentialType>();
 
@@ -88,6 +89,10 @@ export const mockCredentials: CredentialType[] = [
 
 export default function CredentialsComponent() {
   const dispatch = useAppDispatch();
+
+  const { encryptionKey } = useVault();
+
+  console.log("encryptionKey", encryptionKey);
 
   return (
     <div className="flex flex-auto flex-col items-center p-4">
