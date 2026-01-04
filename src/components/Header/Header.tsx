@@ -1,5 +1,6 @@
 "use client";
 
+import useVault from "@/hooks/use-vault-hook";
 import { authClientSignOut } from "@/lib/auth-client";
 import { BRAND_NAME } from "@/utils/constants";
 import { Button } from "@mantine/core";
@@ -12,6 +13,8 @@ export default function Header() {
 
   const [loading, setLoading] = useState<boolean>(false);
 
+  const { lockVault } = useVault();
+
   async function handleSignOut() {
     await authClientSignOut({
       fetchOptions: {
@@ -19,6 +22,7 @@ export default function Header() {
           setLoading(true);
         },
         onSuccess: () => {
+          lockVault();
           router.push("/auth/login");
         },
       },

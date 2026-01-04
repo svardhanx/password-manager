@@ -15,6 +15,7 @@ import { CredentialType } from "@/types/password-credentials";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { credentialSchema } from "@/lib/schema/credentialSchema";
 import { useSession } from "@/lib/auth-client";
+import useVault from "@/hooks/use-vault-hook";
 
 const defaultValues: CredentialType = {
   websiteName: "",
@@ -33,6 +34,10 @@ export default function AddNewCredential() {
   const dispatch = useAppDispatch();
 
   const { data: session } = useSession();
+
+  const { encryptionKey } = useVault();
+
+  console.log("encryptionKey", encryptionKey);
 
   const {
     control,

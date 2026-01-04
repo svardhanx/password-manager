@@ -6,15 +6,14 @@ const userVaultSchema = new mongoose.Schema(
       type: String,
       required: [true, "User ID is required"],
       unique: true,
-      lowercase: true,
       trim: true,
     },
-    siteName: {
+    websiteName: {
       type: String,
       required: [true, "Website name is required"],
       trim: true,
     },
-    siteLink: {
+    websiteLink: {
       type: String,
     },
     email: {

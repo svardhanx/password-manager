@@ -8,7 +8,6 @@ import { ActionIcon, Button, Menu } from "@mantine/core";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { Copy, Ellipsis, Pencil, PlusCircle, Trash } from "lucide-react";
 import AddNewCredential from "./AddNewCredential";
-import useVault from "@/hooks/use-vault-hook";
 
 const columnHelper = createColumnHelper<CredentialType>();
 
@@ -90,14 +89,10 @@ export const mockCredentials: CredentialType[] = [
 export default function CredentialsComponent() {
   const dispatch = useAppDispatch();
 
-  const { encryptionKey } = useVault();
-
-  console.log("encryptionKey", encryptionKey);
-
   return (
     <div className="flex flex-auto flex-col items-center p-4">
       <section className="flex p-2 justify-between w-full">
-        <h2 className="font-bold text-2xl text-heading">My Credentials</h2>
+        <h2 className="font-bold text-2xl text-white">My Credentials</h2>
         <Button
           onClick={() => dispatch(openAddCredentialModal())}
           leftSection={<PlusCircle size={14} />}
@@ -105,7 +100,7 @@ export default function CredentialsComponent() {
           Add New
         </Button>
       </section>
-      <DataTable<CredentialType> columns={columns} data={mockCredentials} />
+      <DataTable<CredentialType> columns={columns} data={[]} />
       <AddNewCredential />
     </div>
   );

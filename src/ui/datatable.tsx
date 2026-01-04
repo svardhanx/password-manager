@@ -7,13 +7,19 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import Image from "next/image";
 
 interface Props<TData> {
   columns: ColumnDef<TData>[];
   data: TData[];
+  noDataText?: string;
 }
 
-export default function DataTable<TData>({ columns, data }: Props<TData>) {
+export default function DataTable<TData>({
+  columns,
+  data,
+  noDataText,
+}: Props<TData>) {
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     columns,
@@ -74,7 +80,16 @@ export default function DataTable<TData>({ columns, data }: Props<TData>) {
                 })}
               </>
             ) : (
-              <></>
+              <div className="flex flex-col justify-center items-center w-full mx-auto space-y-3 p-20">
+                <Image
+                  src={"/assets/images/no-data-img.svg"}
+                  className="w-60 h-60"
+                  alt="No data Image"
+                />
+                <p className="text-muted-foreground">
+                  {noDataText ?? "No Data"}
+                </p>
+              </div>
             )}
           </Table.Tbody>
         </Table>
