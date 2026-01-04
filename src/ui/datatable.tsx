@@ -57,7 +57,7 @@ export default function DataTable<TData>({
             })}
           </Table.Thead>
           <Table.Tbody>
-            {tableRows.length > 0 ? (
+            {tableRows.length > 0 && (
               <>
                 {tableRows.map((row) => {
                   const cells = row.getVisibleCells();
@@ -79,21 +79,22 @@ export default function DataTable<TData>({
                   );
                 })}
               </>
-            ) : (
-              <div className="flex flex-col justify-center items-center w-full mx-auto space-y-3 p-20">
-                <Image
-                  src={"/assets/images/no-data-img.svg"}
-                  className="w-60 h-60"
-                  alt="No data Image"
-                />
-                <p className="text-muted-foreground">
-                  {noDataText ?? "No Data"}
-                </p>
-              </div>
             )}
           </Table.Tbody>
         </Table>
       </ScrollArea>
+      {tableRows.length === 0 && (
+        <div className="flex flex-col justify-center items-center w-full mx-auto space-y-3 p-15">
+          <Image
+            src={"/assets/images/no-data-img.svg"}
+            // className="w-60 h-60"
+            alt="No data Image"
+            width={300}
+            height={300}
+          />
+          <p className="text-sub-heading">{noDataText ?? "No Data"}</p>
+        </div>
+      )}
     </div>
   );
 }

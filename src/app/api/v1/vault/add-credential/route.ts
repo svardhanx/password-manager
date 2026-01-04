@@ -57,11 +57,14 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Error while adding a vault item ->", error);
     if (error instanceof Error) {
-      return NextResponse.json({
-        message: error.message,
-        success: false,
-        errors: null,
-      });
+      return NextResponse.json(
+        {
+          message: error.message,
+          success: false,
+          errors: null,
+        },
+        { status: 500 }
+      );
     }
   }
 }

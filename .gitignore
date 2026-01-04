@@ -43,3 +43,5 @@ next-env.d.ts
 vault.db
 
 better-auth_migrations/
+
+/.vscode

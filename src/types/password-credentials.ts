@@ -1,5 +1,5 @@
 export type CredentialType = {
-  id?: string;
+  userId?: string;
   websiteLink?: string;
   websiteName: string;
   email: string;

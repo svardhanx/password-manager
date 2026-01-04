@@ -16,6 +16,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { credentialSchema } from "@/lib/schema/credentialSchema";
 import { useSession } from "@/lib/auth-client";
 import useVault from "@/hooks/use-vault-hook";
+import encryptData from "@/utils/encrypt";
+import toast from "react-hot-toast";
+import { useAddUserCredentialMutation } from "@/hooks/useAddUserCredentialMutation";
 
 const defaultValues: CredentialType = {
   websiteName: "",
@@ -37,7 +40,9 @@ export default function AddNewCredential() {
 
   const { encryptionKey } = useVault();
 
-  console.log("encryptionKey", encryptionKey);
+  // console.log("encryptionKey", encryptionKey);
+
+  const addUserCredentialMutation = useAddUserCredentialMutation();
 
   const {
     control,
@@ -54,13 +59,36 @@ export default function AddNewCredential() {
     reset();
   }
 
-  function credentialsSubmitHandler(data: CredentialType) {
+  async function credentialsSubmitHandler(data: CredentialType) {
+    if (!encryptionKey) {
+      toast.error("Error while submitting a request");
+      return;
+    }
+
     const userId = session?.user.id;
 
-    data.id = userId;
+    data.userId = userId;
 
     console.log("Credentials", data);
-    handleClose();
+
+    try {
+      const encryptedPassword = await encryptData(data.password, encryptionKey);
+
+      const payload = {
+        userId: data.userId,
+        websiteName: data.websiteName,
+        websiteLink: data.websiteLink || "",
+        email: data.email,
+        password: encryptedPassword,
+        username: data.username || "",
+        notes: data.notes || "",
+      };
+
+      await addUserCredentialMutation.mutateAsync(payload);
+      handleClose();
+    } catch (error) {
+      console.error("Error requesting a mutation", error);
+    }
   }
 
   return (
