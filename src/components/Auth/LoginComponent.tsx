@@ -1,7 +1,8 @@
 "use client";
 
 import useVault from "@/hooks/use-vault-hook";
-import { authClientSignIn } from "@/lib/auth-client";
+import { useGetUserSecurityQuery } from "@/hooks/useGetUserSecurityQuery";
+import { authClientSignIn, useSession } from "@/lib/auth-client";
 import { loginSchema } from "@/lib/schema/loginSchema";
 import { LoginFormFields } from "@/types/formFields";
 import { BRAND_NAME } from "@/utils/constants";
@@ -31,6 +32,14 @@ export default function LoginComponent() {
     resolver: zodResolver(loginSchema),
   });
 
+  const { data: session } = useSession();
+
+  const { data: userSaltData, isError: userSaltDataIsError } =
+    useGetUserSecurityQuery(
+      { id: session?.user.id },
+      Boolean(session?.user.id)
+    );
+
   const router = useRouter();
 
   const { unlockVault } = useVault();
@@ -50,10 +59,17 @@ export default function LoginComponent() {
         onRequest: () => {
           setLoading(true);
         },
-        onSuccess: () => {
-          unlockVault(data.password);
-          router.push("/credentials");
-          setLoading(false);
+        onSuccess: async () => {
+          console.log("userSaltData?.salt", userSaltData?.salt);
+          if (userSaltData?.salt) {
+            await unlockVault(data.password, userSaltData?.salt);
+            router.push("/credentials");
+            setLoading(false);
+          }
+          if (userSaltDataIsError) {
+            toast.error("Something went wrong. please try again");
+            setLoading(false);
+          }
         },
         onError: (ctx: ErrorContext) => {
           toast.error(ctx.error.message);

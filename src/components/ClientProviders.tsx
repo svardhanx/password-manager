@@ -12,6 +12,7 @@ import "@mantine/core/styles.css";
 import { Toaster } from "react-hot-toast";
 import { ReactChildren } from "@/types/react-children-type";
 import VaultProvider from "@/context/VaultProvider";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export default function ClientProviders({ children }: ReactChildren) {
   const theme: MantineThemeOverride = createTheme({
@@ -35,14 +36,25 @@ export default function ClientProviders({ children }: ReactChildren) {
     primaryShade: 6,
   });
 
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        refetchOnWindowFocus: false,
+        retry: 1,
+      },
+    },
+  });
+
   return (
     <Provider store={store}>
-      <MantineProvider theme={theme}>
-        <VaultProvider>
-          <ApplicationLayout>{children}</ApplicationLayout>
-        </VaultProvider>
-        <Toaster />
-      </MantineProvider>
+      <QueryClientProvider client={queryClient}>
+        <MantineProvider theme={theme}>
+          <VaultProvider>
+            <ApplicationLayout>{children}</ApplicationLayout>
+          </VaultProvider>
+          <Toaster />
+        </MantineProvider>
+      </QueryClientProvider>
     </Provider>
   );
 }

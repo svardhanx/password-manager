@@ -1,28 +1,95 @@
 "use client";
 
+import useVault from "@/hooks/use-vault-hook";
+import { useGetUserSecurityQuery } from "@/hooks/useGetUserSecurityQuery";
+import { authClientSignOut, useSession } from "@/lib/auth-client";
+import decryptData from "@/utils/decrypt";
 import { Button, PasswordInput } from "@mantine/core";
 import { KeyRound } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 export default function UnlockVaultComponent() {
-  const { control } = useForm({ defaultValues: { master_password: "" } });
+  const { control, handleSubmit, reset } = useForm({
+    defaultValues: { master_password: "" },
+  });
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const router = useRouter();
+
+  const { unlockVault } = useVault();
+
+  async function handleSignOut() {
+    await authClientSignOut({
+      fetchOptions: {
+        onRequest: () => {
+          setLoading(true);
+        },
+        onSuccess: () => {
+          router.push("/auth/login");
+        },
+      },
+    });
+  }
+
+  const { data: session } = useSession();
+
+  const user = session?.user;
+
+  const { data: userSaltData, isError: userSaltDataIsError } =
+    useGetUserSecurityQuery({ id: user?.id }, Boolean(user?.id));
+
+  async function unlockVaultHandler(data: { master_password: string }) {
+    setLoading(true);
+
+    const password = data.master_password;
+    try {
+      const key = await unlockVault(password, userSaltData?.salt);
+
+      const decryptedData = await decryptData(
+        userSaltData?.encryptedVerifier,
+        key
+      );
+
+      // console.log({
+      //   decryptedData,
+      //   userId: user?.id,
+      //   isSame: decryptedData === user?.id,
+      // });
+
+      router.replace("/credentials");
+    } catch (error) {
+      console.error("Error decrypting", error);
+      toast.error("Incorrect password");
+      if (userSaltDataIsError) {
+        toast.error("Error - cannot unlock vault.");
+      }
+    } finally {
+      setLoading(false);
+      reset();
+    }
+  }
 
   return (
-    <div className="card-base flex flex-col gap-3 items-center justify-center w-lg p-3 text-black h-full">
+    <div className="card-base flex flex-col gap-3 items-center justify-center w-lg p-3 text-black">
       <div className="rounded-full bg-primary/15 p-4">
         <KeyRound className="text-primary" />
       </div>
       <section className="flex flex-col items-center justify-center w-full p-2">
         <h2 className="text-2xl text-heading font-bold my-2">Vault Locked</h2>
         <p className="text-sm text-sub-heading font-normal">
-          Welcome back, USERNAME_HERE
+          Welcome back, {user?.name}
         </p>
         <p className="text-sm text-sub-heading font-normal">
           Enter your Master Password to unlock your vault.
         </p>
       </section>
-      <section className="flex flex-col gap-5 items-center justify-center w-full">
+      <form
+        className="flex flex-col gap-5 items-center justify-center w-full"
+        onSubmit={handleSubmit(unlockVaultHandler)}
+      >
         <div className="w-full">
           <Controller
             control={control}
@@ -39,20 +106,18 @@ export default function UnlockVaultComponent() {
             }}
           />
         </div>
-        <Button fullWidth type="button">
+        <Button fullWidth type="submit" loading={loading}>
           Unlock Vault
         </Button>
-      </section>
+      </form>
       <div className="text-sm flex items-center p-1 justify-center w-full gap-2">
-        <span>Not USERNAME_HERE? </span>
-        {/* TODO Logout the currently logged in user */}
-        <Link
-          href={"/auth/login"}
-          onClick={() => {}}
+        <span>Not {user?.name}? </span>
+        <p
+          onClick={handleSignOut}
           className="text-primary hover:underline underline-offset-3"
         >
           Login with a different account
-        </Link>
+        </p>
       </div>
     </div>
   );

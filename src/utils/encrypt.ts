@@ -1,4 +1,4 @@
-async function encryptPassword(text: string, key: CryptoKey): Promise<string> {
+async function encryptData(text: string, key: CryptoKey): Promise<string> {
   const encoder = new TextEncoder();
   const iv = crypto.getRandomValues(new Uint8Array(12)); // 96-bit IV
   const data = encoder.encode(text);
@@ -18,4 +18,4 @@ async function encryptPassword(text: string, key: CryptoKey): Promise<string> {
   return encryptedPassword;
 }
 
-export default encryptPassword;
+export default encryptData;

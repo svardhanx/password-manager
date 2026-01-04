@@ -1,7 +1,4 @@
-async function decryptPassword(
-  cipher: string,
-  key: CryptoKey
-): Promise<string> {
+async function decryptData(cipher: string, key: CryptoKey): Promise<string> {
   const encryptedBytes = Uint8Array.from(atob(cipher), (c) => c.charCodeAt(0));
 
   const iv = encryptedBytes.slice(0, 12); // First 12 bytes
@@ -14,8 +11,8 @@ async function decryptPassword(
   );
 
   const decoder = new TextDecoder();
-  const decryptPassword = decoder.decode(decrypted);
+  const decryptedPassword = decoder.decode(decrypted);
 
-  return decryptPassword;
+  return decryptedPassword;
 }
-export default decryptPassword;
+export default decryptData;

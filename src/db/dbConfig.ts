@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const mongoURI: string = process.env.MONGO_URI!;
 
-async function connectDB() {
+async function connectMongo() {
   try {
     await mongoose.connect(mongoURI);
     const connection = mongoose.connection;
@@ -23,4 +23,4 @@ async function connectDB() {
   }
 }
 
-export default connectDB;
+export default connectMongo;

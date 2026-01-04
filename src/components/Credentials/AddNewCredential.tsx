@@ -14,6 +14,7 @@ import { Controller, useForm } from "react-hook-form";
 import { CredentialType } from "@/types/password-credentials";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { credentialSchema } from "@/lib/schema/credentialSchema";
+import { useSession } from "@/lib/auth-client";
 
 const defaultValues: CredentialType = {
   websiteName: "",
@@ -31,6 +32,8 @@ export default function AddNewCredential() {
 
   const dispatch = useAppDispatch();
 
+  const { data: session } = useSession();
+
   const {
     control,
     reset,
@@ -47,6 +50,10 @@ export default function AddNewCredential() {
   }
 
   function credentialsSubmitHandler(data: CredentialType) {
+    const userId = session?.user.id;
+
+    data.id = userId;
+
     console.log("Credentials", data);
     handleClose();
   }
@@ -82,6 +89,9 @@ export default function AddNewCredential() {
                 label="Website Name"
                 placeholder="Enter the website name"
                 error={errors.websiteName?.message}
+                classNames={{
+                  label: "dark:text-heading! text-white!",
+                }}
               />
             );
           }}
@@ -96,6 +106,9 @@ export default function AddNewCredential() {
                 label="Website Link (optional)"
                 placeholder="Enter the website link"
                 error={errors.websiteLink?.message}
+                classNames={{
+                  label: "dark:text-heading! text-white!",
+                }}
               />
             );
           }}
@@ -111,6 +124,9 @@ export default function AddNewCredential() {
                 placeholder="Enter email address"
                 type="email"
                 error={errors.email?.message}
+                classNames={{
+                  label: "dark:text-heading! text-white!",
+                }}
               />
             );
           }}
@@ -125,6 +141,9 @@ export default function AddNewCredential() {
                 label="Password"
                 placeholder="Enter password"
                 error={errors.password?.message}
+                classNames={{
+                  label: "dark:text-heading! text-white!",
+                }}
               />
             );
           }}
@@ -139,6 +158,9 @@ export default function AddNewCredential() {
                 label="Username (optional)"
                 placeholder="Enter username"
                 error={errors.username?.message}
+                classNames={{
+                  label: "dark:text-heading! text-white!",
+                }}
               />
             );
           }}
@@ -154,6 +176,9 @@ export default function AddNewCredential() {
                 placeholder="Enter any notes..."
                 error={errors.notes?.message}
                 autosize
+                classNames={{
+                  label: "dark:text-heading! text-white!",
+                }}
               />
             );
           }}

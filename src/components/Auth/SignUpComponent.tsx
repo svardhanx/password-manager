@@ -12,6 +12,10 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ErrorContext } from "better-auth/react";
+import { useRegisterUserMutation } from "@/hooks/useRegisterUserMutation";
+import { nanoid } from "nanoid";
+import useVault from "@/hooks/use-vault-hook";
+import encryptData from "@/utils/encrypt";
 
 const defaultValues = {
   email: "",
@@ -34,6 +38,10 @@ export default function SignUpComponent() {
 
   const router = useRouter();
 
+  const { unlockVault } = useVault();
+
+  const registerMutation = useRegisterUserMutation();
+
   async function signUpHandler(data: SignupFormFields) {
     // console.log("SignUp", data);
 
@@ -48,9 +56,27 @@ export default function SignUpComponent() {
         onRequest: () => {
           setLoading(true);
         },
-        onSuccess: () => {
-          router.push("/auth/login");
+        onSuccess: async (ctx) => {
+          // console.log(ctx.data);
+          const user = ctx.data.user;
+          const salt = nanoid();
+          const key = await unlockVault(data.password, salt);
+          const encryptedVerifier = await encryptData(user?.id, key);
+          console.log("encryptedVerifier", encryptedVerifier);
+          const payload = {
+            userId: user?.id as string,
+            salt,
+            encryptedVerifier,
+            kdf: {
+              algorithm: "PBKDF2",
+              hash: "SHA-256",
+              iterations: 100000,
+              keyLength: 256,
+            },
+          };
+          await registerMutation.mutateAsync(payload);
           setLoading(false);
+          router.push("/auth/login");
           toast.success("Login to continue");
         },
         onError: (ctx: ErrorContext) => {
