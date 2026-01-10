@@ -8,8 +8,6 @@ export async function DELETE(request: NextRequest) {
   try {
     const body = await request.json();
 
-    console.log("ID", body);
-
     if (!body.id) {
       return NextResponse.json({
         success: false,
