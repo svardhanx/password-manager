@@ -9,7 +9,7 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
-import { closeAddCredentialModal } from "@/store/slices/credentials";
+import { closeCredentialModal } from "@/store/slices/credentials";
 import { Controller, useForm } from "react-hook-form";
 import { CredentialType } from "@/types/password-credentials";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,6 +19,9 @@ import useVault from "@/hooks/use-vault-hook";
 import encryptData from "@/utils/encrypt";
 import toast from "react-hot-toast";
 import { useAddUserCredentialMutation } from "@/hooks/useAddUserCredentialMutation";
+import { useEffect } from "react";
+import revealPassword from "@/utils/revealPassword";
+import { useUpdateUserCredentialMutation } from "@/hooks/useUpdateUserCredentialMutation";
 
 const defaultValues: CredentialType = {
   websiteName: "",
@@ -29,10 +32,18 @@ const defaultValues: CredentialType = {
   username: "",
 };
 
-export default function AddNewCredential() {
+export default function CredentialFormModal() {
   const status = useAppSelector(
-    (state) => state.credentials.addCredentialModal.status
+    (state) => state.credentials.credentialModal.status
   );
+
+  const helperData = useAppSelector(
+    (state) => state.credentials.credentialModal.helperData
+  );
+
+  const credentialMode = helperData?.mode;
+
+  // console.log("helperData", helperData);
 
   const dispatch = useAppDispatch();
 
@@ -44,18 +55,20 @@ export default function AddNewCredential() {
 
   const addUserCredentialMutation = useAddUserCredentialMutation();
 
+  const updateUserCredentialMutation = useUpdateUserCredentialMutation();
+
   const {
     control,
     reset,
     formState: { errors },
     handleSubmit,
-  } = useForm({
+  } = useForm<CredentialType>({
     defaultValues,
     resolver: zodResolver(credentialSchema),
   });
 
   function handleClose() {
-    dispatch(closeAddCredentialModal());
+    dispatch(closeCredentialModal());
     reset();
   }
 
@@ -71,6 +84,8 @@ export default function AddNewCredential() {
 
     console.log("Credentials", data);
 
+    // return;
+
     try {
       const encryptedPassword = await encryptData(data.password, encryptionKey);
 
@@ -82,14 +97,38 @@ export default function AddNewCredential() {
         password: encryptedPassword,
         username: data.username || "",
         notes: data.notes || "",
+        ...(credentialMode === "edit" && { _id: helperData?.data?._id }),
       };
 
-      await addUserCredentialMutation.mutateAsync(payload);
+      console.log("payload", payload);
+
+      // return;
+
+      if (credentialMode === "create") {
+        await addUserCredentialMutation.mutateAsync(payload);
+      }
+
+      if (credentialMode === "edit") {
+        await updateUserCredentialMutation.mutateAsync(payload);
+      }
+
       handleClose();
     } catch (error) {
       console.error("Error requesting a mutation", error);
     }
   }
+
+  useEffect(() => {
+    if (!credentialMode || !helperData.data) return;
+
+    (async function () {
+      const password = await revealPassword(helperData.data!, encryptionKey!);
+      const resetData = { ...helperData.data, password };
+      reset(resetData);
+    })();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [credentialMode, helperData?.data]);
 
   return (
     <Modal
@@ -101,9 +140,15 @@ export default function AddNewCredential() {
       scrollAreaComponent={ScrollArea.Autosize}
       title={
         <div className="flex flex-col gap-2 ">
-          <h2 className="text-heading font-semibold">Add New Password</h2>
+          <h2 className="text-heading font-semibold">
+            {credentialMode === "create"
+              ? "Add New Password"
+              : "Update Password"}
+          </h2>
           <p className="text-sub-heading font-normal text-sm">
-            Enter the details for the new entry
+            {credentialMode === "create"
+              ? "Enter the details for the new entry"
+              : `Update the details for ${helperData?.data?.websiteName}`}
           </p>
         </div>
       }
@@ -217,7 +262,15 @@ export default function AddNewCredential() {
           }}
         />
         <div className="flex p-2 justify-end w-full">
-          <Button type="submit">Submit</Button>
+          <Button
+            type="submit"
+            loading={
+              addUserCredentialMutation.isPending ||
+              updateUserCredentialMutation.isPending
+            }
+          >
+            {credentialMode === "create" ? "Submit" : "Update Entry"}
+          </Button>
         </div>
       </form>
     </Modal>

@@ -12,7 +12,7 @@ import { ErrorContext } from "better-auth/react";
 import { KeyRound } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
@@ -32,6 +32,9 @@ export default function LoginComponent() {
     resolver: zodResolver(loginSchema),
   });
 
+  const [loginSuccess, setLoginSuccess] = useState<boolean>(false);
+  const [loginPassword, setLoginPassword] = useState<string | null>(null);
+
   const { data: session } = useSession();
 
   const { data: userSaltData, isError: userSaltDataIsError } =
@@ -48,6 +51,7 @@ export default function LoginComponent() {
 
   async function signInHandler(data: LoginFormFields) {
     // console.log("SignIn", data);
+    setLoginPassword(data.password);
 
     await authClientSignIn.email(
       {
@@ -60,16 +64,7 @@ export default function LoginComponent() {
           setLoading(true);
         },
         onSuccess: async () => {
-          console.log("userSaltData?.salt", userSaltData?.salt);
-          if (userSaltData?.salt) {
-            await unlockVault(data.password, userSaltData?.salt);
-            router.push("/credentials");
-            setLoading(false);
-          }
-          if (userSaltDataIsError) {
-            toast.error("Something went wrong. please try again");
-            setLoading(false);
-          }
+          setLoginSuccess(true);
         },
         onError: (ctx: ErrorContext) => {
           toast.error(ctx.error.message);
@@ -80,6 +75,28 @@ export default function LoginComponent() {
 
     reset();
   }
+
+  const onSuccess = async function () {
+    if (userSaltData?.salt && loginPassword) {
+      await unlockVault(loginPassword, userSaltData?.salt);
+      router.push("/credentials");
+      setLoading(false);
+    }
+    if (userSaltDataIsError) {
+      toast.error("Something went wrong. please try again");
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!loginSuccess) return;
+
+    (async function () {
+      await onSuccess();
+    })();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loginSuccess]);
 
   return (
     <div className="card-base flex flex-col gap-3 items-center justify-center w-lg p-3">

@@ -1,8 +1,16 @@
 import { CredentialType } from "@/types/password-credentials";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+interface credentialModalHelperData {
+  mode: "create" | "edit";
+  data: CredentialType | null;
+}
+
 interface VaultState {
-  addCredentialModal: { status: boolean; helperData: null };
+  credentialModal: {
+    status: boolean;
+    helperData: credentialModalHelperData | null;
+  };
   viewPassword: {
     status: boolean;
     helperData: CredentialType | null;
@@ -10,7 +18,7 @@ interface VaultState {
 }
 
 const initialState: VaultState = {
-  addCredentialModal: { status: false, helperData: null },
+  credentialModal: { status: false, helperData: null },
   viewPassword: { status: false, helperData: null },
 };
 
@@ -18,13 +26,16 @@ const credentialsSlice = createSlice({
   name: "credentials",
   initialState,
   reducers: {
-    openAddCredentialModal(state) {
-      // state.addCredentialModal.helperData = action?.payload;
-      state.addCredentialModal.status = true;
+    openCredentialModal(
+      state,
+      action: PayloadAction<credentialModalHelperData | null>
+    ) {
+      state.credentialModal.helperData = action?.payload;
+      state.credentialModal.status = true;
     },
-    closeAddCredentialModal(state) {
-      state.addCredentialModal.status = false;
-      state.addCredentialModal.helperData = null;
+    closeCredentialModal(state) {
+      state.credentialModal.status = false;
+      state.credentialModal.helperData = null;
     },
     openViewPasswordModal(state, action: PayloadAction<CredentialType | null>) {
       state.viewPassword.helperData = action.payload;
@@ -38,8 +49,8 @@ const credentialsSlice = createSlice({
 });
 
 export const {
-  openAddCredentialModal,
-  closeAddCredentialModal,
+  openCredentialModal,
+  closeCredentialModal,
   openViewPasswordModal,
   closeViewPasswordModal,
 } = credentialsSlice.actions;

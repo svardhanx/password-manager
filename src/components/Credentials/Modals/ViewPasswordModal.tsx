@@ -5,7 +5,7 @@ import useVault from "@/hooks/use-vault-hook";
 import { closeViewPasswordModal } from "@/store/slices/credentials";
 import { PasswordStrength } from "@/types/password-strength";
 import { checkPasswordStrength } from "@/utils/checkPasswordStrength";
-import decryptData from "@/utils/decrypt";
+import revealPassword from "@/utils/revealPassword";
 import { Button, Modal, PasswordInput, Pill } from "@mantine/core";
 import { Copy } from "lucide-react";
 import { useEffect, useEffectEvent, useState } from "react";
@@ -40,24 +40,8 @@ export default function ViewPasswordModal() {
     dispatch(closeViewPasswordModal());
   }
 
-  async function revealPassword() {
-    if (!helperData) {
-      toast.error("Error fetching password.");
-      return;
-    }
-
-    if (!encryptionKey || !helperData?.password) {
-      toast.error("Error fetching password.");
-      return;
-    }
-
-    const decryptedData = await decryptData(helperData.password, encryptionKey);
-
-    return decryptedData;
-  }
-
   const password = useEffectEvent(async () => {
-    const password = await revealPassword();
+    const password = await revealPassword(helperData!, encryptionKey!);
 
     if (password) setDecryptedPassword(password);
 
@@ -66,7 +50,7 @@ export default function ViewPasswordModal() {
   });
 
   async function handleCopyPassword() {
-    const text = await revealPassword();
+    const text = await revealPassword(helperData!, encryptionKey!);
 
     if (!text) {
       toast.error("Error copying password");
@@ -76,13 +60,15 @@ export default function ViewPasswordModal() {
     await navigator.clipboard.writeText(text);
 
     toast.success("Password copied successfully.");
+
+    handleClose();
   }
 
   useEffect(() => {
     if (!status) return;
 
     password();
-  }, [status, helperData]);
+  }, [status]);
 
   return (
     <Modal

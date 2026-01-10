@@ -1,6 +1,7 @@
 import z from "zod";
 
 const vaultItemSchema = z.object({
+  _id: z.string().optional(),
   userId: z.string(),
   websiteName: z.string(),
   websiteLink: z.string().optional(),

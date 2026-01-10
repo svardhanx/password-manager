@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 await connectMongo();
 
-export async function POST(request: NextRequest) {
+export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
 
@@ -24,7 +24,18 @@ export async function POST(request: NextRequest) {
 
     const data = result.data;
 
-    const vaultItem = await UserVault.create({
+    if (!data._id) {
+      return NextResponse.json(
+        {
+          message: "Invalid request. Identifier missing.",
+          errors: null,
+          success: false,
+        },
+        { status: 404 }
+      );
+    }
+
+    const vaultItem = await UserVault.findByIdAndUpdate(data._id, {
       userId: data.userId,
       websiteName: data.websiteName,
       websiteLink: data.websiteLink || "",
@@ -49,9 +60,9 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         errors: null,
-        message: "Credential added.",
+        message: `Updated entry for ${vaultItem.websiteName}.`,
       },
-      { status: 201 }
+      { status: 200 }
     );
   } catch (error) {
     console.error("Error while adding a vault item ->", error);
