@@ -3,6 +3,7 @@
 import { useAppDispatch } from "@/hooks/redux-hooks";
 import {
   openCredentialModal,
+  openDeletePasswordModal,
   openViewPasswordModal,
 } from "@/store/slices/credentials";
 import { CredentialType } from "@/types/password-credentials";
@@ -17,6 +18,7 @@ import ViewPasswordModal from "./Modals/ViewPasswordModal";
 import { useRouter } from "next/navigation";
 import useVault from "@/hooks/use-vault-hook";
 import CredentialFormModal from "./Modals/CredentialFormModal";
+import DeleteCredentialPopup from "./Modals/DeleteCredentialPopup";
 
 const columnHelper = createColumnHelper<CredentialType>();
 
@@ -155,6 +157,7 @@ export default function CredentialsComponent() {
               <Menu.Item
                 leftSection={<Trash size={14} className="text-error" />}
                 className="hover:bg-red-200!"
+                onClick={() => dispatch(openDeletePasswordModal(original))}
               >
                 <span className="text-error">Delete</span>
               </Menu.Item>
@@ -193,6 +196,7 @@ export default function CredentialsComponent() {
       />
       <CredentialFormModal />
       <ViewPasswordModal />
+      <DeleteCredentialPopup />
     </div>
   );
 }

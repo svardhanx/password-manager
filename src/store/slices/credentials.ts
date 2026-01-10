@@ -15,11 +15,16 @@ interface VaultState {
     status: boolean;
     helperData: CredentialType | null;
   };
+  deletePassword: {
+    status: boolean;
+    helperData: CredentialType | null;
+  };
 }
 
 const initialState: VaultState = {
   credentialModal: { status: false, helperData: null },
   viewPassword: { status: false, helperData: null },
+  deletePassword: { status: false, helperData: null },
 };
 
 const credentialsSlice = createSlice({
@@ -45,6 +50,17 @@ const credentialsSlice = createSlice({
       state.viewPassword.status = false;
       state.viewPassword.helperData = null;
     },
+    openDeletePasswordModal(
+      state,
+      action: PayloadAction<CredentialType | null>
+    ) {
+      state.deletePassword.helperData = action.payload;
+      state.deletePassword.status = true;
+    },
+    closeDeletePasswordModal(state) {
+      state.deletePassword.status = false;
+      state.deletePassword.helperData = null;
+    },
   },
 });
 
@@ -53,6 +69,8 @@ export const {
   closeCredentialModal,
   openViewPasswordModal,
   closeViewPasswordModal,
+  openDeletePasswordModal,
+  closeDeletePasswordModal,
 } = credentialsSlice.actions;
 
 export default credentialsSlice.reducer;

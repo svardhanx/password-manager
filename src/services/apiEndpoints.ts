@@ -4,4 +4,5 @@ export const apiEndpoints = {
   GET_USER_CREDENTIALS: "api/v1/vault/get-credentials",
   ADD_CREDENTIAL: "api/v1/vault/add-credential",
   UPDATE_CREDENTIAL: "api/v1/vault/update-credential",
+  DELETE_CREDENTIAL: "api/v1/vault/delete-credential",
 };
