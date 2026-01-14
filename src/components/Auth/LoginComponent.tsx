@@ -76,8 +76,8 @@ export default function LoginComponent() {
     reset();
   }
 
-  const onSuccess = async function () {
-    if (userSaltData?.salt && loginPassword) {
+  async function onSuccess() {
+    if (loginPassword) {
       await unlockVault(loginPassword, userSaltData?.salt);
       router.push("/credentials");
       setLoading(false);
@@ -86,7 +86,7 @@ export default function LoginComponent() {
       toast.error("Something went wrong. please try again");
       setLoading(false);
     }
-  };
+  }
 
   useEffect(() => {
     if (!loginSuccess) return;
