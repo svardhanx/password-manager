@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const userVaultSchema = new mongoose.Schema(
   {
@@ -29,11 +30,17 @@ const userVaultSchema = new mongoose.Schema(
     username: { type: String },
     notes: { type: String },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-export const UserVault = mongoose.model(
-  "User_Vault",
-  userVaultSchema,
-  "user_vault"
-);
+userVaultSchema.plugin(mongoosePaginate);
+
+interface VaultDocument extends mongoose.Document {
+  page: number;
+  limit: number;
+}
+
+export const UserVault = mongoose.model<
+  VaultDocument,
+  mongoose.PaginateModel<VaultDocument>
+>("User_Vault", userVaultSchema, "user_vault");

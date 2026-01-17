@@ -3,10 +3,15 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ userId: string }> }
+  { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
     const userId = (await params).userId;
+
+    const searchParams = request.nextUrl.searchParams;
+
+    const page = searchParams.get("page");
+    const limit = searchParams.get("limit");
 
     if (!userId || userId === "") {
       return NextResponse.json(
@@ -15,11 +20,19 @@ export async function GET(
           message: "user id missing in request",
           errors: null,
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
-    const userCredentials = await UserVault.find({ userId: userId });
+    // const userCredentials = await UserVault.find({ userId: userId });
+
+    const userCredentials = await UserVault?.paginate(
+      { userId: userId },
+      {
+        page: page ? parseInt(page) : 0,
+        limit: limit ? parseInt(limit) : 10,
+      },
+    );
 
     if (!userCredentials) {
       return NextResponse.json(
@@ -28,7 +41,7 @@ export async function GET(
           message: "error fetching user information",
           errors: null,
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -39,7 +52,7 @@ export async function GET(
         success: true,
         data: userCredentials,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error fetching credentials->", error);

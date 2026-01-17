@@ -13,7 +13,7 @@ import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { Ellipsis, Eye, Pencil, PlusCircle, Trash } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import { useGetUserCredentialsQuery } from "@/hooks/useGetUserCredentialsQuery";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ViewPasswordModal from "./Modals/ViewPasswordModal";
 import { useRouter } from "next/navigation";
 import useVault from "@/hooks/use-vault-hook";
@@ -25,6 +25,9 @@ const columnHelper = createColumnHelper<CredentialType>();
 export default function CredentialsComponent() {
   const dispatch = useAppDispatch();
 
+  const [rowsPerPage, setRowsPerPage] = useState<string | null>("5");
+  const [page, setPage] = useState<number>(1);
+
   const { data: session } = useSession();
 
   const router = useRouter();
@@ -33,14 +36,33 @@ export default function CredentialsComponent() {
 
   const userId = session?.user.id;
 
-  const { data: credentialsData, dataUpdatedAt: credentialsDataUpdatedAt } =
-    useGetUserCredentialsQuery({ userId: userId });
+  // ! GET CREDENTIALS API HERE
+  const {
+    data: credentialsData,
+    dataUpdatedAt: credentialsDataUpdatedAt,
+    isFetching: credentialsDataLoading,
+    refetch: refetchCredentialsData,
+  } = useGetUserCredentialsQuery(
+    {
+      params: userId!,
+      queryParams: {
+        page: page,
+        limit: rowsPerPage!,
+      },
+    },
+    Boolean(userId),
+  );
+
+  useEffect(() => {
+    refetchCredentialsData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, rowsPerPage]);
 
   const credentials = useMemo(() => {
     if (!credentialsDataUpdatedAt) return [] as CredentialType[];
     // console.log("credentialsData", credentialsData);
 
-    const credentials = credentialsData?.data as CredentialType[];
+    const credentials = credentialsData?.data?.docs as CredentialType[];
 
     if (credentials?.length === 0) {
       return [] as CredentialType[];
@@ -148,7 +170,7 @@ export default function CredentialsComponent() {
                     openCredentialModal({
                       mode: "edit",
                       data: original,
-                    })
+                    }),
                   )
                 }
               >
@@ -193,6 +215,14 @@ export default function CredentialsComponent() {
         columns={columns}
         data={credentials}
         noDataText="Your credentials list is currently empty. Click the 'Add New' button to fill it up."
+        isLoading={credentialsDataLoading}
+        totalDocs={credentialsData?.data?.totalDocs}
+        rowsPerPage={rowsPerPage}
+        setRowsPerPage={setRowsPerPage}
+        page={page}
+        setPage={setPage}
+        subHeaderTitle="Credentials"
+        subHeaderDescription="A list of all the credentials"
       />
       <CredentialFormModal />
       <ViewPasswordModal />

@@ -34,11 +34,11 @@ const defaultValues: CredentialType = {
 
 export default function CredentialFormModal() {
   const status = useAppSelector(
-    (state) => state.credentials.credentialModal.status
+    (state) => state.credentials.credentialModal.status,
   );
 
   const helperData = useAppSelector(
-    (state) => state.credentials.credentialModal.helperData
+    (state) => state.credentials.credentialModal.helperData,
   );
 
   const credentialMode = helperData?.mode;
@@ -82,7 +82,7 @@ export default function CredentialFormModal() {
 
     data.userId = userId;
 
-    console.log("Credentials", data);
+    // console.log("Credentials", data);
 
     // return;
 
@@ -100,7 +100,7 @@ export default function CredentialFormModal() {
         ...(credentialMode === "edit" && { _id: helperData?.data?._id }),
       };
 
-      console.log("payload", payload);
+      // console.log("payload", payload);
 
       // return;
 

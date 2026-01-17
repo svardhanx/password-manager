@@ -11,6 +11,7 @@
   --warning: #f59e0b;
   --info: #2e75d4;
   --white-border: #e2e8f0;
+  --muted-foreground: oklch(0.556 0 0);
 }
 
 @theme inline {
@@ -26,12 +27,20 @@
   --color-warning: var(--warning);
   --color-info: var(--info);
   --color-white-border: var(--white-border);
+  --color-muted-foreground: var(--muted-foreground);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+  }
+}
+
+@media not (prefers-color-scheme: dark) {
+  :root {
+    --background: #ededed;
+    --foreground: #0a0a0a;
   }
 }
 
