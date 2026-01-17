@@ -12,6 +12,7 @@ export async function GET(
 
     const page = searchParams.get("page");
     const limit = searchParams.get("limit");
+    const search = searchParams.get("search");
 
     if (!userId || userId === "") {
       return NextResponse.json(
@@ -27,7 +28,15 @@ export async function GET(
     // const userCredentials = await UserVault.find({ userId: userId });
 
     const userCredentials = await UserVault?.paginate(
-      { userId: userId },
+      {
+        userId: userId,
+        ...(search && {
+          websiteName: {
+            $regex: search,
+            $options: "i", // case-insensitive
+          },
+        }),
+      },
       {
         page: page ? parseInt(page) : 0,
         limit: limit ? parseInt(limit) : 10,

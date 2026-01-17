@@ -8,7 +8,7 @@ import {
 } from "@/store/slices/credentials";
 import { CredentialType } from "@/types/password-credentials";
 import DataTable from "@/ui/datatable";
-import { ActionIcon, Button, Menu } from "@mantine/core";
+import { ActionIcon, Button, Menu, TextInput } from "@mantine/core";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { Ellipsis, Eye, Pencil, PlusCircle, Trash } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import useVault from "@/hooks/use-vault-hook";
 import CredentialFormModal from "./Modals/CredentialFormModal";
 import DeleteCredentialPopup from "./Modals/DeleteCredentialPopup";
+import { useDebouncedState } from "@mantine/hooks";
 
 const columnHelper = createColumnHelper<CredentialType>();
 
@@ -27,6 +28,7 @@ export default function CredentialsComponent() {
 
   const [rowsPerPage, setRowsPerPage] = useState<string | null>("5");
   const [page, setPage] = useState<number>(1);
+  const [search, setSearch] = useDebouncedState("", 400);
 
   const { data: session } = useSession();
 
@@ -48,6 +50,7 @@ export default function CredentialsComponent() {
       queryParams: {
         page: page,
         limit: rowsPerPage!,
+        ...(search && { search }),
       },
     },
     Boolean(userId),
@@ -56,7 +59,7 @@ export default function CredentialsComponent() {
   useEffect(() => {
     refetchCredentialsData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, search]);
 
   const credentials = useMemo(() => {
     if (!credentialsDataUpdatedAt) return [] as CredentialType[];
@@ -221,8 +224,17 @@ export default function CredentialsComponent() {
         setRowsPerPage={setRowsPerPage}
         page={page}
         setPage={setPage}
+        totalPages={credentialsData?.data?.totalPages}
         subHeaderTitle="Credentials"
         subHeaderDescription="A list of all the credentials"
+        filters={
+          <TextInput
+            defaultValue={search}
+            onChange={(e) => setSearch(e.currentTarget.value)}
+            placeholder="Search with website name..."
+            classNames={{ root: "w-1/3!" }}
+          />
+        }
       />
       <CredentialFormModal />
       <ViewPasswordModal />

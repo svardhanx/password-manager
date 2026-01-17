@@ -33,6 +33,8 @@ const userVaultSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+userVaultSchema.index({ websiteName: "text" });
+
 userVaultSchema.plugin(mongoosePaginate);
 
 interface VaultDocument extends mongoose.Document {

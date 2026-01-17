@@ -10,12 +10,13 @@ import {
 } from "@tanstack/react-table";
 import { nanoid } from "nanoid";
 import Image from "next/image";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, ReactNode, SetStateAction } from "react";
 
 interface Props<TData> {
   columns: ColumnDef<TData>[];
   data: TData[];
   noDataText?: string;
+  filters?: ReactNode;
   subHeaderTitle?: string;
   subHeaderDescription?: string;
   isLoading: boolean;
@@ -25,12 +26,14 @@ interface Props<TData> {
   setRowsPerPage: Dispatch<SetStateAction<string | null>>;
   page?: number;
   setPage?: Dispatch<SetStateAction<number>>;
+  totalPages: number;
 }
 
 export default function DataTable<TData>({
   columns,
   data,
   noDataText,
+  filters,
   subHeaderTitle,
   subHeaderDescription,
   isLoading = false,
@@ -40,6 +43,7 @@ export default function DataTable<TData>({
   setRowsPerPage,
   page,
   setPage,
+  totalPages,
 }: Props<TData>) {
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
@@ -66,6 +70,7 @@ export default function DataTable<TData>({
         title={subHeaderTitle ?? ""}
         description={subHeaderDescription ?? ""}
       />
+      {filters ? <div className="my-2">{filters}</div> : <></>}
       {!isLoading && (
         <ScrollArea w={"100%"} scrollbarSize={5} scrollbars="x">
           <Table withTableBorder withRowBorders withColumnBorders>
@@ -176,7 +181,7 @@ export default function DataTable<TData>({
               />
             </div>
             <Pagination
-              total={10}
+              total={totalPages}
               color="primary"
               value={page}
               onChange={setPage}
