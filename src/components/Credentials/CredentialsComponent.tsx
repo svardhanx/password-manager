@@ -108,7 +108,7 @@ export default function CredentialsComponent() {
         const original = info.row.original;
         return (
           <div className="flex items-center gap-2">
-            <p className="text-black">●●●●●●●●●●●●</p>
+            <p className="text-black dark:text-white">●●●●●●●●●●●●</p>
             <div className="p-1 hover:bg-primary hover:text-white transition-all rounded-md">
               <Eye
                 size={18}
@@ -159,7 +159,7 @@ export default function CredentialsComponent() {
                   icon: "p-1 hover:bg-primary hover:text-white transition-all rounded-md",
                 }}
               >
-                <Ellipsis className="text-black hover:text-white" />
+                <Ellipsis className="text-black dark:text-white hover:text-white hover:dark:text-black" />
               </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
@@ -204,7 +204,9 @@ export default function CredentialsComponent() {
   return (
     <div className="flex flex-auto flex-col items-center p-4">
       <section className="flex p-2 justify-between w-full">
-        <h2 className="font-bold text-2xl text-white">My Credentials</h2>
+        <h2 className="font-bold text-2xl text-black dark:text-white">
+          My Credentials
+        </h2>
         <Button
           onClick={() =>
             dispatch(openCredentialModal({ mode: "create", data: null }))

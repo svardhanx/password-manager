@@ -1,12 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import useVault from "@/hooks/use-vault-hook";
 import { authClientSignOut } from "@/lib/auth-client";
 import { BRAND_NAME } from "@/utils/constants";
-import { Button } from "@mantine/core";
-import { KeyRound, LogOut } from "lucide-react";
+import { ActionIcon, Button, useMantineColorScheme } from "@mantine/core";
+import { KeyRound, LogOut, Moon, Sun } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 export default function Header() {
   const router = useRouter();
@@ -14,6 +14,10 @@ export default function Header() {
   const [loading, setLoading] = useState<boolean>(false);
 
   const { lockVault } = useVault();
+
+  const { toggleColorScheme, colorScheme } = useMantineColorScheme({
+    keepTransitions: true,
+  });
 
   async function handleSignOut() {
     await authClientSignOut({
@@ -40,7 +44,20 @@ export default function Header() {
           {BRAND_NAME}
         </h3>
       </div>
-      <div>
+      <div className="flex items-center gap-3">
+        <ActionIcon
+          className="p-1 grid place-items-center cursor-pointer"
+          onClick={toggleColorScheme}
+          variant="default"
+          size="input-md"
+          aria-label="Toggle color scheme"
+        >
+          {colorScheme === "dark" ? (
+            <Sun className="shrink-0" />
+          ) : (
+            <Moon className="shrink-0" size={18} />
+          )}
+        </ActionIcon>
         <Button
           loading={loading}
           leftSection={<LogOut size={16} />}

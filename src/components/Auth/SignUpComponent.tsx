@@ -83,7 +83,7 @@ export default function SignUpComponent() {
           toast.error(ctx.error.message);
           setLoading(false);
         },
-      }
+      },
     );
 
     reset();
@@ -95,8 +95,10 @@ export default function SignUpComponent() {
         <KeyRound className="text-primary" />
       </div>
       <section className="flex flex-col items-center justify-center w-full p-2">
-        <h2 className="text-2xl text-heading font-bold">Create Your Vault</h2>
-        <p className="text-sm text-sub-heading font-normal">
+        <h2 className="text-2xl text-heading dark:text-white font-bold">
+          Create Your Vault
+        </h2>
+        <p className="text-sm text-sub-heading dark:text-white font-normal">
           Choose a strong master password to secure your new vault.
         </p>
       </section>
@@ -115,6 +117,7 @@ export default function SignUpComponent() {
                   placeholder="Enter your username"
                   label="Username"
                   error={errors.username?.message}
+                  classNames={{ label: "dark:text-white" }}
                 />
               );
             }}
@@ -132,6 +135,7 @@ export default function SignUpComponent() {
                   placeholder="Enter your email address"
                   label="Email"
                   error={errors.email?.message}
+                  classNames={{ label: "dark:text-white" }}
                 />
               );
             }}
@@ -148,6 +152,7 @@ export default function SignUpComponent() {
                   placeholder="Enter your password"
                   label="Password"
                   error={errors.password?.message}
+                  classNames={{ label: "dark:text-white" }}
                 />
               );
             }}
@@ -157,7 +162,7 @@ export default function SignUpComponent() {
           Signup
         </Button>
       </form>
-      <p className="w-full text-sm text-black text-center">
+      <p className="w-full text-sm text-black dark:text-white text-center">
         Already have an account?{" "}
         <Link href={"/auth/login"} className="underline text-primary">
           Login

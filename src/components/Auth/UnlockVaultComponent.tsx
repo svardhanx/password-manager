@@ -48,16 +48,7 @@ export default function UnlockVaultComponent() {
     try {
       const key = await unlockVault(password, userSaltData?.salt);
 
-      const decryptedData = await decryptData(
-        userSaltData?.encryptedVerifier,
-        key
-      );
-
-      // console.log({
-      //   decryptedData,
-      //   userId: user?.id,
-      //   isSame: decryptedData === user?.id,
-      // });
+      await decryptData(userSaltData?.encryptedVerifier, key);
 
       router.replace("/credentials");
     } catch (error) {
@@ -79,10 +70,10 @@ export default function UnlockVaultComponent() {
       </div>
       <section className="flex flex-col items-center justify-center w-full p-2">
         <h2 className="text-2xl text-heading font-bold my-2">Vault Locked</h2>
-        <p className="text-sm text-sub-heading font-normal">
+        <p className="text-sm text-sub-heading dark:text-white font-normal">
           Welcome back, {user?.name}
         </p>
-        <p className="text-sm text-sub-heading font-normal">
+        <p className="text-sm text-sub-heading dark:text-white font-normal">
           Enter your Master Password to unlock your vault.
         </p>
       </section>
@@ -100,7 +91,7 @@ export default function UnlockVaultComponent() {
                   {...field}
                   placeholder="Enter your master password"
                   label="Master Password"
-                  classNames={{ label: "font-medium! my-2!" }}
+                  classNames={{ label: "font-medium! my-2! dark:text-white" }}
                 />
               );
             }}

@@ -81,7 +81,11 @@ export default function DataTable<TData>({
                   <Table.Tr key={headerGroup.id}>
                     {tableHeaders.map((header) => {
                       return (
-                        <Table.Th key={header.id} colSpan={header.colSpan}>
+                        <Table.Th
+                          key={header.id}
+                          colSpan={header.colSpan}
+                          classNames={{ th: "text-black! dark:text-white!" }}
+                        >
                           {header.isPlaceholder
                             ? null
                             : flexRender(
@@ -101,7 +105,10 @@ export default function DataTable<TData>({
                   {tableRows.map((row) => {
                     const cells = row.getVisibleCells();
                     return (
-                      <Table.Tr key={row.id}>
+                      <Table.Tr
+                        key={row.id}
+                        classNames={{ tr: "text-black! dark:text-white!" }}
+                      >
                         {cells.map((cell) => {
                           return (
                             <Table.Td key={cell.id}>
@@ -161,14 +168,16 @@ export default function DataTable<TData>({
       {!hidePagination && (
         <div className="flex items-center justify-between py-3">
           <section className="text-sm ml-1.5 font-medium">
-            <span>Results: </span>
-            <span className="text-muted-foreground font-bold underline underline-offset-3">
+            <span className="text-black dark:text-white">Results: </span>
+            <span className="text-muted-foreground dark:text-white font-bold underline underline-offset-3">
               {totalDocs || tableRows.length} row(s)
             </span>
           </section>
           <section className="flex items-center gap-x-2">
             <div className="flex items-center gap-x-2">
-              <p className="text-sm text-muted-foreground">Rows per page</p>
+              <p className="text-sm text-muted-foreground dark:text-white">
+                Rows per page
+              </p>
               <Select
                 data={["5", "10", "20", "30", "40", "50"]}
                 value={rowsPerPage}

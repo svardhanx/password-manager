@@ -40,7 +40,7 @@ export default function LoginComponent() {
   const { data: userSaltData, isError: userSaltDataIsError } =
     useGetUserSecurityQuery(
       { id: session?.user.id },
-      Boolean(session?.user.id)
+      Boolean(session?.user.id),
     );
 
   const router = useRouter();
@@ -70,7 +70,7 @@ export default function LoginComponent() {
           toast.error(ctx.error.message);
           setLoading(false);
         },
-      }
+      },
     );
 
     reset();
@@ -99,13 +99,15 @@ export default function LoginComponent() {
   }, [loginSuccess]);
 
   return (
-    <div className="card-base flex flex-col gap-3 items-center justify-center w-lg p-3">
+    <div className="card-base flex flex-col gap-3 items-center justify-center h-full md:h-fit w-lg p-3">
       <div className="rounded-full bg-primary/15 p-4">
         <KeyRound className="text-primary" />
       </div>
       <section className="flex flex-col items-center justify-center w-full p-2">
-        <h2 className="text-2xl text-heading font-bold">{BRAND_NAME}</h2>
-        <p className="text-sm text-sub-heading font-normal">
+        <h2 className="text-2xl text-heading dark:text-white font-bold">
+          {BRAND_NAME}
+        </h2>
+        <p className="text-sm text-sub-heading dark:text-white font-normal">
           Securely access your password vault.
         </p>
       </section>
@@ -125,6 +127,7 @@ export default function LoginComponent() {
                   placeholder="Enter your email address"
                   label="Email"
                   error={errors.email?.message}
+                  classNames={{ label: "dark:text-white" }}
                 />
               );
             }}
@@ -141,6 +144,7 @@ export default function LoginComponent() {
                   placeholder="Enter your password"
                   label="Password"
                   error={errors.password?.message}
+                  classNames={{ label: "dark:text-white" }}
                 />
               );
             }}
@@ -150,7 +154,7 @@ export default function LoginComponent() {
           Login
         </Button>
       </form>
-      <p className="w-full text-sm text-black text-center">
+      <p className="w-full text-sm dark:text-white text-center">
         <Link href={"/auth/signup"} className="underline text-primary">
           Click here
         </Link>{" "}

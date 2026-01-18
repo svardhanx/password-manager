@@ -48,7 +48,7 @@ export default function ClientProviders({ children }: ReactChildren) {
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-        <MantineProvider theme={theme}>
+        <MantineProvider theme={theme} defaultColorScheme="dark">
           <VaultProvider>
             <ApplicationLayout>{children}</ApplicationLayout>
           </VaultProvider>
