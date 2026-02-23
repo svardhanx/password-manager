@@ -1,22 +1,16 @@
-import { CredentialType } from "@/types/password-credentials";
 import decryptData from "./decrypt";
 import toast from "react-hot-toast";
 
 async function revealPassword(
-  helperData: CredentialType,
-  encryptionKey: CryptoKey
+  password: string | null | undefined,
+  encryptionKey: CryptoKey,
 ) {
-  if (!helperData) {
+  if (!encryptionKey || !password) {
     toast.error("Error fetching password.");
     return;
   }
 
-  if (!encryptionKey || !helperData?.password) {
-    toast.error("Error fetching password.");
-    return;
-  }
-
-  const decryptedData = await decryptData(helperData.password, encryptionKey);
+  const decryptedData = await decryptData(password, encryptionKey);
 
   return decryptedData;
 }

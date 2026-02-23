@@ -1,18 +1,33 @@
 async function decryptData(cipher: string, key: CryptoKey): Promise<string> {
-  const encryptedBytes = Uint8Array.from(atob(cipher), (c) => c.charCodeAt(0));
+  try {
+    const binaryString = atob(cipher);
 
-  const iv = encryptedBytes.slice(0, 12); // First 12 bytes
-  const cipherText = encryptedBytes.slice(12); // Rest = cipherText
+    const encryptedBytes = Uint8Array.from(binaryString, (c) =>
+      c.charCodeAt(0),
+    );
 
-  const decrypted = await crypto.subtle.decrypt(
-    { name: "AES-GCM", iv },
-    key,
-    cipherText
-  );
+    const iv = encryptedBytes.slice(0, 12); // First 12 bytes
 
-  const decoder = new TextDecoder();
-  const decryptedPassword = decoder.decode(decrypted);
+    const cipherText = encryptedBytes.slice(12); // Rest = cipherText
 
-  return decryptedPassword;
+    const decryptedBuffer = await crypto.subtle.decrypt(
+      { name: "AES-GCM", iv },
+      key,
+      cipherText,
+    );
+
+    const decoder = new TextDecoder();
+
+    const decryptedPassword = decoder.decode(decryptedBuffer);
+
+    return decryptedPassword;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Decryption error: ", error);
+      return error?.message;
+    } else {
+      return "Error Occurred";
+    }
+  }
 }
 export default decryptData;

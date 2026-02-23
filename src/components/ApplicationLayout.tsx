@@ -15,7 +15,7 @@ export default function ApplicationLayout({ children }: ReactChildren) {
   return (
     <main className="flex flex-col w-full h-full overflow-hidden">
       <Header />
-      <div className="flex-1 overflow-hidden">{children}</div>
+      <div className="flex-1 overflow-y-auto">{children}</div>
     </main>
   );
 }

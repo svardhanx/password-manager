@@ -119,11 +119,13 @@ export default function CredentialFormModal() {
   }
 
   useEffect(() => {
-    if (!credentialMode || !helperData.data) return;
+    const data = helperData?.data;
+
+    if (!credentialMode || data === null) return;
 
     (async function () {
-      const password = await revealPassword(helperData.data!, encryptionKey!);
-      const resetData = { ...helperData.data, password };
+      const password = await revealPassword(data?.password, encryptionKey!);
+      const resetData = { ...data, password };
       reset(resetData);
     })();
 
@@ -140,12 +142,12 @@ export default function CredentialFormModal() {
       scrollAreaComponent={ScrollArea.Autosize}
       title={
         <div className="flex flex-col gap-2 ">
-          <h2 className="text-heading font-semibold">
+          <h2 className="text-heading dark:text-white font-semibold">
             {credentialMode === "create"
               ? "Add New Password"
               : "Update Password"}
           </h2>
-          <p className="text-sub-heading font-normal text-sm">
+          <p className="text-sub-heading dark:text-white font-normal text-sm">
             {credentialMode === "create"
               ? "Enter the details for the new entry"
               : `Update the details for ${helperData?.data?.websiteName}`}
@@ -168,7 +170,7 @@ export default function CredentialFormModal() {
                 placeholder="Enter the website name"
                 error={errors.websiteName?.message}
                 classNames={{
-                  label: "dark:text-heading! text-white!",
+                  label: "dark:text-white! text-heading!",
                 }}
               />
             );
@@ -185,7 +187,7 @@ export default function CredentialFormModal() {
                 placeholder="Enter the website link"
                 error={errors.websiteLink?.message}
                 classNames={{
-                  label: "dark:text-heading! text-white!",
+                  label: "dark:text-white! text-heading!",
                 }}
               />
             );
@@ -203,7 +205,7 @@ export default function CredentialFormModal() {
                 type="email"
                 error={errors.email?.message}
                 classNames={{
-                  label: "dark:text-heading! text-white!",
+                  label: "dark:text-white! text-heading!",
                 }}
               />
             );
@@ -220,7 +222,7 @@ export default function CredentialFormModal() {
                 placeholder="Enter password"
                 error={errors.password?.message}
                 classNames={{
-                  label: "dark:text-heading! text-white!",
+                  label: "dark:text-white! text-heading!",
                 }}
               />
             );
@@ -237,7 +239,7 @@ export default function CredentialFormModal() {
                 placeholder="Enter username"
                 error={errors.username?.message}
                 classNames={{
-                  label: "dark:text-heading! text-white!",
+                  label: "dark:text-white! text-heading!",
                 }}
               />
             );
@@ -255,7 +257,7 @@ export default function CredentialFormModal() {
                 error={errors.notes?.message}
                 autosize
                 classNames={{
-                  label: "dark:text-heading! text-white!",
+                  label: "dark:text-white! text-heading!",
                 }}
               />
             );

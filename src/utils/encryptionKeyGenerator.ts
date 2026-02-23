@@ -1,6 +1,6 @@
 async function encryptionKeyGenerator(
   masterPassword: string,
-  salt: string
+  salt: string,
 ): Promise<CryptoKey> {
   const password2BEncrypted = masterPassword;
   const uniqueSalt = salt;
@@ -11,7 +11,7 @@ async function encryptionKeyGenerator(
     enc.encode(password2BEncrypted),
     "PBKDF2",
     false,
-    ["deriveKey"]
+    ["deriveKey"],
   );
 
   const aesKey = await crypto.subtle.deriveKey(
@@ -24,7 +24,7 @@ async function encryptionKeyGenerator(
     keyMaterial,
     { name: "AES-GCM", length: 256 },
     true,
-    ["encrypt", "decrypt"]
+    ["encrypt", "decrypt"],
   );
 
   //   console.log(aesKey);

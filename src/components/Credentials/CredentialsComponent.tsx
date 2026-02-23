@@ -1,16 +1,12 @@
 "use client";
 
 import { useAppDispatch } from "@/hooks/redux-hooks";
-import {
-  openCredentialModal,
-  openDeletePasswordModal,
-  openViewPasswordModal,
-} from "@/store/slices/credentials";
+import { openCredentialModal } from "@/store/slices/credentials";
 import { CredentialType } from "@/types/password-credentials";
 import DataTable from "@/ui/datatable";
-import { ActionIcon, Button, Menu, TextInput } from "@mantine/core";
+import { Button, TextInput } from "@mantine/core";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
-import { Ellipsis, Eye, Pencil, PlusCircle, Trash } from "lucide-react";
+import { LayoutGrid, List, PlusCircle, Search } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import { useGetUserCredentialsQuery } from "@/hooks/useGetUserCredentialsQuery";
 import { useEffect, useMemo, useState } from "react";
@@ -20,13 +16,19 @@ import useVault from "@/hooks/use-vault-hook";
 import CredentialFormModal from "./Modals/CredentialFormModal";
 import DeleteCredentialPopup from "./Modals/DeleteCredentialPopup";
 import { useDebouncedState } from "@mantine/hooks";
+import PaginationComponent from "../Common/PaginationComponent";
+import PasswordRow from "../Common/PasswordRow";
+import MenuComponent from "../Common/MenuComponent";
+import CredentialCard from "../Common/CredentialCard";
+import { nanoid } from "nanoid";
 
 const columnHelper = createColumnHelper<CredentialType>();
 
 export default function CredentialsComponent() {
   const dispatch = useAppDispatch();
 
-  const [rowsPerPage, setRowsPerPage] = useState<string | null>("5");
+  const [view, setView] = useState<"table" | "grid">("table");
+  const [rowsPerPage, setRowsPerPage] = useState<string | null>("10");
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useDebouncedState("", 400);
 
@@ -55,6 +57,10 @@ export default function CredentialsComponent() {
     },
     Boolean(userId),
   );
+
+  const totalPages = credentialsData?.data?.totalPages;
+
+  const totalDocs = credentialsData?.data?.totalDocs;
 
   useEffect(() => {
     refetchCredentialsData();
@@ -106,18 +112,7 @@ export default function CredentialsComponent() {
       header: "Password",
       cell: (info) => {
         const original = info.row.original;
-        return (
-          <div className="flex items-center gap-2">
-            <p className="text-black dark:text-white">●●●●●●●●●●●●</p>
-            <div className="p-1 hover:bg-primary hover:text-white transition-all rounded-md">
-              <Eye
-                size={18}
-                onClick={() => dispatch(openViewPasswordModal(original))}
-                className="cursor-pointer"
-              />
-            </div>
-          </div>
-        );
+        return <PasswordRow original={original} />;
       },
     }) as ColumnDef<CredentialType>,
     columnHelper.accessor("username", {
@@ -149,46 +144,7 @@ export default function CredentialsComponent() {
       header: "Actions",
       cell: (info) => {
         const original = info.row.original;
-        return (
-          <Menu shadow="md" width={200} position="bottom-end">
-            <Menu.Target>
-              <ActionIcon
-                variant="transparent"
-                aria-label="actions"
-                classNames={{
-                  icon: "p-1 hover:bg-primary hover:text-white transition-all rounded-md",
-                }}
-              >
-                <Ellipsis className="text-black dark:text-white hover:text-white hover:dark:text-black" />
-              </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown>
-              {/* <Menu.Item leftSection={<Copy size={14} />}>
-                Copy Password
-              </Menu.Item> */}
-              <Menu.Item
-                leftSection={<Pencil size={14} />}
-                onClick={() =>
-                  dispatch(
-                    openCredentialModal({
-                      mode: "edit",
-                      data: original,
-                    }),
-                  )
-                }
-              >
-                Edit
-              </Menu.Item>
-              <Menu.Item
-                leftSection={<Trash size={14} className="text-error" />}
-                className="hover:bg-red-200!"
-                onClick={() => dispatch(openDeletePasswordModal(original))}
-              >
-                <span className="text-error">Delete</span>
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-        );
+        return <MenuComponent original={original} />;
       },
     }),
   ];
@@ -202,41 +158,73 @@ export default function CredentialsComponent() {
   }, [isUnlocked, session, router]);
 
   return (
-    <div className="flex flex-auto flex-col items-center p-4">
-      <section className="flex p-2 justify-between w-full">
+    <div className="flex flex-auto flex-col gap-3 items-center p-4">
+      <div className="flex p-2 justify-between w-full">
         <h2 className="font-bold text-2xl text-black dark:text-white">
           My Credentials
         </h2>
-        <Button
-          onClick={() =>
-            dispatch(openCredentialModal({ mode: "create", data: null }))
-          }
-          leftSection={<PlusCircle size={14} />}
-        >
-          Add New
-        </Button>
-      </section>
-      <DataTable<CredentialType>
-        columns={columns}
-        data={credentials}
-        noDataText="Your credentials list is currently empty. Click the 'Add New' button to fill it up."
-        isLoading={credentialsDataLoading}
-        totalDocs={credentialsData?.data?.totalDocs}
-        rowsPerPage={rowsPerPage}
-        setRowsPerPage={setRowsPerPage}
+        <div className="flex gap-1 items-center">
+          <section className="flex items-center gap-1 rounded-md bg-heading p-1">
+            <Button
+              className="w-fit transition-all"
+              size="xs"
+              variant={view === "table" ? "primary" : "transparent"}
+              onClick={() => setView("table")}
+            >
+              <List size={18} />
+            </Button>
+            <Button
+              className="w-fit transition-all"
+              size="xs"
+              variant={view === "grid" ? "primary" : "transparent"}
+              onClick={() => setView("grid")}
+            >
+              <LayoutGrid size={18} />
+            </Button>
+          </section>
+
+          <Button
+            onClick={() =>
+              dispatch(openCredentialModal({ mode: "create", data: null }))
+            }
+            leftSection={<PlusCircle size={14} />}
+          >
+            Add New
+          </Button>
+        </div>
+      </div>
+      <TextInput
+        defaultValue={search}
+        onChange={(e) => setSearch(e.currentTarget.value)}
+        placeholder="Search with website name..."
+        className="w-full"
+        leftSection={<Search size={18} />}
+      />
+      {view === "table" ? (
+        <DataTable<CredentialType>
+          columns={columns}
+          data={credentials}
+          noDataText="Your credentials list is currently empty. Click the 'Add New' button to fill it up."
+          isLoading={credentialsDataLoading}
+          subHeaderTitle="Credentials"
+          subHeaderDescription="A list of all the credentials"
+        />
+      ) : (
+        <div className="w-full grid grid-cols-4 gap-4 my-2">
+          {credentials.map((credential) => (
+            <CredentialCard key={nanoid()} credential={credential} />
+          ))}
+        </div>
+      )}
+
+      <PaginationComponent
         page={page}
         setPage={setPage}
-        totalPages={credentialsData?.data?.totalPages}
-        subHeaderTitle="Credentials"
-        subHeaderDescription="A list of all the credentials"
-        filters={
-          <TextInput
-            defaultValue={search}
-            onChange={(e) => setSearch(e.currentTarget.value)}
-            placeholder="Search with website name..."
-            classNames={{ root: "w-1/3!" }}
-          />
-        }
+        rowsPerPage={rowsPerPage}
+        setRowsPerPage={setRowsPerPage}
+        totalDocs={totalDocs}
+        totalPages={totalPages}
+        view={view}
       />
       <CredentialFormModal />
       <ViewPasswordModal />

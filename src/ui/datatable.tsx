@@ -1,7 +1,7 @@
 "use client";
 
 import SubHeader from "@/components/Common/SubHeader";
-import { Pagination, ScrollArea, Select, Skeleton, Table } from "@mantine/core";
+import { ScrollArea, Skeleton, Table } from "@mantine/core";
 import {
   ColumnDef,
   flexRender,
@@ -10,40 +10,23 @@ import {
 } from "@tanstack/react-table";
 import { nanoid } from "nanoid";
 import Image from "next/image";
-import { Dispatch, ReactNode, SetStateAction } from "react";
 
 interface Props<TData> {
   columns: ColumnDef<TData>[];
   data: TData[];
   noDataText?: string;
-  filters?: ReactNode;
   subHeaderTitle?: string;
   subHeaderDescription?: string;
   isLoading: boolean;
-  hidePagination?: boolean;
-  totalDocs?: number;
-  rowsPerPage: string | null;
-  setRowsPerPage: Dispatch<SetStateAction<string | null>>;
-  page?: number;
-  setPage?: Dispatch<SetStateAction<number>>;
-  totalPages: number;
 }
 
 export default function DataTable<TData>({
   columns,
   data,
   noDataText,
-  filters,
   subHeaderTitle,
   subHeaderDescription,
   isLoading = false,
-  hidePagination = false,
-  totalDocs,
-  rowsPerPage,
-  setRowsPerPage,
-  page,
-  setPage,
-  totalPages,
 }: Props<TData>) {
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
@@ -70,7 +53,6 @@ export default function DataTable<TData>({
         title={subHeaderTitle ?? ""}
         description={subHeaderDescription ?? ""}
       />
-      {filters ? <div className="my-2">{filters}</div> : <></>}
       {!isLoading && (
         <ScrollArea w={"100%"} scrollbarSize={5} scrollbars="x">
           <Table withTableBorder withRowBorders withColumnBorders>
@@ -156,47 +138,11 @@ export default function DataTable<TData>({
         <div className="flex flex-col justify-center items-center w-full mx-auto space-y-3 p-15">
           <Image
             src={"/assets/images/no-data-img.svg"}
-            // className="w-60 h-60"
             alt="No data Image"
             width={300}
             height={300}
           />
           <p className="text-sub-heading">{noDataText ?? "No Data"}</p>
-        </div>
-      )}
-
-      {!hidePagination && (
-        <div className="flex items-center justify-between py-3">
-          <section className="text-sm ml-1.5 font-medium">
-            <span className="text-black dark:text-white">Results: </span>
-            <span className="text-muted-foreground dark:text-white font-bold underline underline-offset-3">
-              {totalDocs || tableRows.length} row(s)
-            </span>
-          </section>
-          <section className="flex items-center gap-x-2">
-            <div className="flex items-center gap-x-2">
-              <p className="text-sm text-muted-foreground dark:text-white">
-                Rows per page
-              </p>
-              <Select
-                data={["5", "10", "20", "30", "40", "50"]}
-                value={rowsPerPage}
-                onChange={setRowsPerPage}
-                classNames={{
-                  root: "max-w-[4rem]",
-                  dropdown: "text-black!",
-                }}
-                allowDeselect={false}
-              />
-            </div>
-            <Pagination
-              total={totalPages}
-              color="primary"
-              value={page}
-              onChange={setPage}
-              disabled={false}
-            />
-          </section>
         </div>
       )}
     </div>

@@ -22,7 +22,7 @@ export default function ViewPasswordModal() {
   const dispatch = useAppDispatch();
 
   const { status, helperData } = useAppSelector(
-    (state) => state.credentials.viewPassword
+    (state) => state.credentials.viewPassword,
   );
 
   const [passwordStrength, setPasswordStrength] =
@@ -41,7 +41,7 @@ export default function ViewPasswordModal() {
   }
 
   const password = useEffectEvent(async () => {
-    const password = await revealPassword(helperData!, encryptionKey!);
+    const password = await revealPassword(helperData?.password, encryptionKey!);
 
     if (password) setDecryptedPassword(password);
 
@@ -50,7 +50,7 @@ export default function ViewPasswordModal() {
   });
 
   async function handleCopyPassword() {
-    const text = await revealPassword(helperData!, encryptionKey!);
+    const text = await revealPassword(helperData?.password, encryptionKey!);
 
     if (!text) {
       toast.error("Error copying password");
@@ -78,10 +78,10 @@ export default function ViewPasswordModal() {
       withCloseButton
       title={
         <div className="flex flex-col gap-1">
-          <h3 className="font-normal text-lg text-heading">
+          <h3 className="font-normal text-lg text-heading dark:text-white">
             {helperData?.websiteName}
           </h3>
-          <p className="text-sub-heading text-sm font-normal">
+          <p className="text-sub-heading text-sm font-normal dark:text-white">
             Email: {helperData?.email}
           </p>
         </div>
@@ -89,7 +89,9 @@ export default function ViewPasswordModal() {
     >
       <form className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <h3 className="font-normal text-sm text-heading">Password</h3>
+          <h3 className="font-normal text-sm text-heading dark:text-white">
+            Password
+          </h3>
           <Pill
             classNames={{
               root: `text-xs! text-white! ${strengthColors[passwordStrength!]}`,
