@@ -84,7 +84,7 @@ export default function LoginComponent() {
 
         if (!key) throw new Error("Error generating encryption key");
 
-        router.push("/credentials");
+        router.replace("/credentials");
 
         setLoading(false);
         reset();
