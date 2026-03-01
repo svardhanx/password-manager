@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useVault from "@/hooks/use-vault-hook";
 import { useGetUserSecurityQuery } from "@/hooks/useGetUserSecurityQuery";
 import {
@@ -36,13 +36,14 @@ export default function LoginComponent() {
     resolver: zodResolver(loginSchema),
   });
 
+  const [password, setPassword] = useState("");
+
   const { data: session } = useSession();
 
-  const { data: userSaltData, isError: userSaltDataIsError } =
-    useGetUserSecurityQuery(
-      { id: session?.user.id },
-      Boolean(session?.user.id),
-    );
+  const { data: userSaltData, status } = useGetUserSecurityQuery(
+    { id: session?.user.id },
+    Boolean(session?.user.id) && Boolean(password),
+  );
 
   const router = useRouter();
 
@@ -64,7 +65,7 @@ export default function LoginComponent() {
           setLoading(true);
         },
         onSuccess: async () => {
-          await onSuccess(data.password);
+          setPassword(data.password);
         },
         onError: (ctx: ErrorContext) => {
           toast.error(ctx.error.message);
@@ -74,26 +75,33 @@ export default function LoginComponent() {
     );
   }
 
-  async function onSuccess(loginPassword: string) {
-    if (userSaltDataIsError || !userSaltData?.salt) {
-      toast.error("Something went wrong. Salt was missing.");
-      await authClientSignOut();
-      setLoading(false);
-      return;
-    }
-    const key = await unlockVault(loginPassword, userSaltData.salt);
+  useEffect(() => {
+    if (!userSaltData?.salt || !password || status !== "success") return;
 
-    if (!key) {
-      toast.error("Error occurred while generating encryption key");
-      await authClientSignOut();
-      setLoading(false);
-      return;
+    async function unlock() {
+      try {
+        const key = await unlockVault(password, userSaltData.salt);
+
+        if (!key) throw new Error("Error generating encryption key");
+
+        router.push("/credentials");
+
+        setLoading(false);
+        reset();
+      } catch (error) {
+        console.error("error", error);
+        toast.error("Something went wrong. Salt was missing.");
+        await authClientSignOut();
+        setLoading(false);
+      } finally {
+        setPassword("");
+      }
     }
 
-    router.push("/credentials");
-    setLoading(false);
-    reset();
-  }
+    unlock();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userSaltData?.salt, password, status]);
 
   return (
     <div className="card-base flex flex-col gap-3 items-center justify-center h-full md:h-fit w-lg p-3">

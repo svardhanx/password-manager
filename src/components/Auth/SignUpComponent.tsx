@@ -62,7 +62,7 @@ export default function SignUpComponent() {
           const salt = nanoid();
           const key = await unlockVault(data.password, salt);
           const encryptedVerifier = await encryptData(user?.id, key);
-          console.log("encryptedVerifier", encryptedVerifier);
+          // console.log("encryptedVerifier", encryptedVerifier);
           const payload = {
             userId: user?.id as string,
             salt,
@@ -77,7 +77,6 @@ export default function SignUpComponent() {
           await registerMutation.mutateAsync(payload);
           setLoading(false);
           router.push("/auth/login");
-          toast.success("Login to continue");
         },
         onError: (ctx: ErrorContext) => {
           toast.error(ctx.error.message);

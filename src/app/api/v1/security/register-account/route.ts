@@ -1,4 +1,4 @@
-import connectMongo from "@/db/dbConfig";
+import { connectMongo } from "@/db/dbConfig";
 import { UserSecurity } from "@/models/userSecurityModel";
 import { userSecuritySchema } from "@/types/user-security-schema";
 // import bcrypt from "bcryptjs";
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
         success: true,
         errors: null,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Error in registering account:", error);

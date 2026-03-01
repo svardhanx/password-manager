@@ -1,4 +1,4 @@
-import connectMongo from "@/db/dbConfig";
+import { connectMongo } from "@/db/dbConfig";
 import vaultItemSchema from "@/lib/schema/vaultItemSchema";
 import { UserVault } from "@/models/userVaultModel";
 import { NextRequest, NextResponse } from "next/server";
@@ -18,7 +18,7 @@ export async function PUT(request: NextRequest) {
           errors: result.error.issues,
           success: false,
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -31,7 +31,7 @@ export async function PUT(request: NextRequest) {
           errors: null,
           success: false,
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -52,7 +52,7 @@ export async function PUT(request: NextRequest) {
           errors: null,
           success: false,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -62,7 +62,7 @@ export async function PUT(request: NextRequest) {
         errors: null,
         message: `Updated entry for ${vaultItem.websiteName}.`,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error while adding a vault item ->", error);
@@ -73,7 +73,7 @@ export async function PUT(request: NextRequest) {
           success: false,
           errors: null,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
   }

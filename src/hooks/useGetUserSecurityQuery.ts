@@ -6,7 +6,7 @@ const endpoint = apiEndpoints.GET_USER_SECURITY;
 
 export function useGetUserSecurityQuery(
   queryData: { id: string | undefined },
-  enabled: boolean
+  enabled: boolean,
 ) {
   return useQuery({
     queryKey: ["user-security"],

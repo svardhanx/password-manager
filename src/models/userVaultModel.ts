@@ -1,7 +1,15 @@
+import { CredentialType } from "@/types/password-credentials";
 import mongoose from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
 
-const userVaultSchema = new mongoose.Schema(
+type UserVault = Omit<CredentialType, "_id">;
+
+interface VaultDocument extends UserVault, mongoose.Document {
+  // page: number;
+  // limit: number;
+}
+
+const userVaultSchema = new mongoose.Schema<VaultDocument>(
   {
     userId: {
       type: String,
@@ -36,11 +44,6 @@ const userVaultSchema = new mongoose.Schema(
 userVaultSchema.index({ websiteName: "text" });
 
 userVaultSchema.plugin(mongoosePaginate);
-
-interface VaultDocument extends mongoose.Document {
-  page: number;
-  limit: number;
-}
 
 export const UserVault = mongoose.model<
   VaultDocument,

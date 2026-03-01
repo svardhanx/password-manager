@@ -1,9 +1,23 @@
+import { db } from "@/db/dbConfig";
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
 import Database from "better-sqlite3";
 
+function getDatabase() {
+  const environment = process.env.NODE_ENV;
+
+  if (environment === "development") {
+    return new Database("./vault.db");
+  }
+
+  return {
+    db,
+    type: "sqlite",
+  };
+}
+
 export const auth = betterAuth({
-  database: new Database("./vault.db"),
+  database: getDatabase(),
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,

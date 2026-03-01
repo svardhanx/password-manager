@@ -1,4 +1,4 @@
-import connectMongo from "@/db/dbConfig";
+import { connectMongo } from "@/db/dbConfig";
 import { UserVault } from "@/models/userVaultModel";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -24,7 +24,7 @@ export async function DELETE(request: NextRequest) {
         errors: null,
         message: "Entry deleted.",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error while deleting a vault item ->", error);
@@ -35,7 +35,7 @@ export async function DELETE(request: NextRequest) {
           success: false,
           errors: null,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
   }

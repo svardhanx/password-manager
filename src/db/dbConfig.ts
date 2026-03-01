@@ -1,8 +1,15 @@
 import mongoose from "mongoose";
+import { Kysely } from "kysely";
+import { LibsqlDialect } from "@libsql/kysely-libsql";
 
-const mongoURI: string = process.env.MONGO_URI!;
+const environment = process.env.NODE_ENV;
 
-async function connectMongo() {
+const mongoURI: string =
+  environment === "production"
+    ? process.env.MONGO_URI!
+    : process.env.DEV_MONGO_URI!;
+
+export async function connectMongo() {
   try {
     await mongoose.connect(mongoURI);
     const connection = mongoose.connection;
@@ -23,4 +30,9 @@ async function connectMongo() {
   }
 }
 
-export default connectMongo;
+export const db = new Kysely({
+  dialect: new LibsqlDialect({
+    url: process.env.TURSO_DATABASE_URL!,
+    authToken: process.env.TURSO_AUTH_TOKEN!,
+  }),
+});

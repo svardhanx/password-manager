@@ -7,11 +7,11 @@ export default function DeleteCredentialPopup() {
   const dispatch = useAppDispatch();
 
   const status = useAppSelector(
-    (state) => state.credentials.deletePassword.status
+    (state) => state.credentials.deletePassword.status,
   );
 
   const helperData = useAppSelector(
-    (state) => state.credentials.deletePassword.helperData
+    (state) => state.credentials.deletePassword.helperData,
   );
 
   function handleClose() {
@@ -29,19 +29,29 @@ export default function DeleteCredentialPopup() {
   }
 
   return (
-    <Modal opened={status} onClose={handleClose} centered size={"md"}>
+    <Modal
+      opened={status}
+      onClose={handleClose}
+      centered
+      size={"md"}
+      title={`Delete ${helperData?.websiteName}`}
+    >
       <div className="flex flex-col gap-2 mt-1 mb-3">
-        <h2 className="font-bold text-lg text-black">
+        <h2 className="font-bold text-lg text-heading dark:text-white">
           Are you absolutely sure?
         </h2>
-        <p className="text-black text-sm">
+        <p className="text-sub-heading dark:text-white text-sm">
           This action cannot be undone and the entry for{" "}
           <span className="font-bold">{helperData?.websiteName}</span> will be
           permanently deleted.
         </p>
       </div>
       <div className="flex items-center justify-end gap-2">
-        <Button variant="default" onClick={handleClose}>
+        <Button
+          variant="default"
+          onClick={handleClose}
+          disabled={deleteUserCredentialMutation.isPending}
+        >
           Cancel
         </Button>
         <Button
@@ -49,6 +59,7 @@ export default function DeleteCredentialPopup() {
           color="red"
           className="text-white"
           onClick={handleDelete}
+          loading={deleteUserCredentialMutation.isPending}
         >
           Delete
         </Button>

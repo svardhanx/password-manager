@@ -1,4 +1,4 @@
-import connectMongo from "@/db/dbConfig";
+import { connectMongo } from "@/db/dbConfig";
 import vaultItemSchema from "@/lib/schema/vaultItemSchema";
 import { UserVault } from "@/models/userVaultModel";
 import { NextRequest, NextResponse } from "next/server";
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
           errors: result.error.issues,
           success: false,
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
           errors: null,
           success: false,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
         errors: null,
         message: "Credential added.",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Error while adding a vault item ->", error);
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
           success: false,
           errors: null,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
   }

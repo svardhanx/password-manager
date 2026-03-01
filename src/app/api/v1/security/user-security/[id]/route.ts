@@ -1,4 +1,4 @@
-import connectMongo from "@/db/dbConfig";
+import { connectMongo } from "@/db/dbConfig";
 import { UserSecurity } from "@/models/userSecurityModel";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -6,7 +6,7 @@ await connectMongo();
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const id = (await params).id;
@@ -18,7 +18,7 @@ export async function GET(
           message: "id missing in request",
           errors: null,
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -31,7 +31,7 @@ export async function GET(
           message: "error fetching user information",
           errors: null,
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -55,7 +55,7 @@ export async function GET(
           message: error.message,
           errors: error,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
   }
