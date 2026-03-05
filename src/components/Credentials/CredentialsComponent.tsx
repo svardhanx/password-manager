@@ -30,9 +30,7 @@ export default function CredentialsComponent() {
 
   const os = useOs();
 
-  const defaultView: ViewType = os === "ios" ? "grid" : "table";
-
-  const [view, setView] = useState<ViewType>(defaultView);
+  const [view, setView] = useState<ViewType>("table");
   const [rowsPerPage, setRowsPerPage] = useState<string | null>("10");
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useDebouncedState("", 400);
@@ -74,7 +72,6 @@ export default function CredentialsComponent() {
 
   const credentials = useMemo(() => {
     if (!credentialsDataUpdatedAt) return [] as CredentialType[];
-    // console.log("credentialsData", credentialsData);
 
     const credentials = credentialsData?.data?.docs as CredentialType[];
 
@@ -155,6 +152,12 @@ export default function CredentialsComponent() {
   ];
 
   useEffect(() => {
+    if (os === "undetermined") return;
+
+    if (os === "ios") setView("grid");
+  }, [os]);
+
+  useEffect(() => {
     if (!session) return;
 
     if (session && !isUnlocked) {
@@ -199,10 +202,6 @@ export default function CredentialsComponent() {
         </div>
       </div>
 
-      <p className="my-2 font-bold text-heading dark:text-white">
-        defaultView is: {defaultView}{" "}
-      </p>
-
       <TextInput
         defaultValue={search}
         onChange={(e) => setSearch(e.currentTarget.value)}
@@ -210,7 +209,7 @@ export default function CredentialsComponent() {
         className="w-full"
         leftSection={<Search size={18} />}
       />
-      {view === "table" ? (
+      {view === "table" && (
         <DataTable<CredentialType>
           columns={columns}
           data={credentials}
@@ -219,7 +218,9 @@ export default function CredentialsComponent() {
           subHeaderTitle="Credentials"
           subHeaderDescription="A list of all the credentials"
         />
-      ) : (
+      )}
+
+      {view === "grid" && (
         <div className="w-full flex flex-wrap gap-2 md:grid md:grid-cols-4 md:gap-4 my-2">
           {credentials.map((credential) => (
             <CredentialCard key={nanoid()} credential={credential} />

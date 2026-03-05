@@ -32,10 +32,6 @@ export default function ViewPasswordModal() {
 
   const { encryptionKey } = useVault();
 
-  // console.log("encryptionKey", encryptionKey);
-
-  // console.log("helperData", helperData);
-
   function handleClose() {
     dispatch(closeViewPasswordModal());
   }
@@ -50,16 +46,7 @@ export default function ViewPasswordModal() {
   });
 
   async function handleCopyPassword() {
-    const text = await revealPassword(helperData?.password, encryptionKey!);
-
-    if (!text) {
-      toast.error("Error copying password");
-      return;
-    }
-
-    toast.success("text generated");
-
-    await navigator.clipboard.writeText(text);
+    await navigator.clipboard.writeText(decryptedPassword);
 
     toast.success("Password copied successfully.");
 

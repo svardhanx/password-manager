@@ -69,7 +69,9 @@ export default function UnlockVaultComponent() {
         <KeyRound className="text-primary" />
       </div>
       <section className="flex flex-col items-center justify-center w-full p-2">
-        <h2 className="text-2xl text-heading font-bold my-2">Vault Locked</h2>
+        <h2 className="text-2xl text-heading dark:text-white font-bold my-2">
+          Vault Locked
+        </h2>
         <p className="text-sm text-sub-heading dark:text-white font-normal">
           Welcome back, {user?.name}
         </p>
