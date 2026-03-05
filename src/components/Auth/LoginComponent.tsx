@@ -9,7 +9,7 @@ import {
   useSession,
 } from "@/lib/auth-client";
 import { loginSchema } from "@/lib/schema/loginSchema";
-import { LoginFormFields } from "@/types/formFields";
+import { LoginFormFields } from "@/types/form-fields";
 import { BRAND_NAME } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, PasswordInput, TextInput } from "@mantine/core";

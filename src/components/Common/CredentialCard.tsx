@@ -8,7 +8,7 @@ export default function CredentialCard({
   credential: CredentialType;
 }) {
   return (
-    <div className="card-base flex flex-col gap-4">
+    <div className="card-base flex flex-col gap-4 flex-auto">
       <div className="flex items-center justify-between w-full">
         <p className="text-heading dark:text-white text-base font-medium">
           {credential.websiteName}

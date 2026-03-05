@@ -15,19 +15,24 @@ import { useRouter } from "next/navigation";
 import useVault from "@/hooks/use-vault-hook";
 import CredentialFormModal from "./Modals/CredentialFormModal";
 import DeleteCredentialPopup from "./Modals/DeleteCredentialPopup";
-import { useDebouncedState } from "@mantine/hooks";
+import { useDebouncedState, useOs } from "@mantine/hooks";
 import PaginationComponent from "../Common/PaginationComponent";
 import PasswordRow from "../Common/PasswordRow";
 import MenuComponent from "../Common/MenuComponent";
 import CredentialCard from "../Common/CredentialCard";
 import { nanoid } from "nanoid";
+import { ViewType } from "@/types/view-type";
 
 const columnHelper = createColumnHelper<CredentialType>();
 
 export default function CredentialsComponent() {
   const dispatch = useAppDispatch();
 
-  const [view, setView] = useState<"table" | "grid">("table");
+  const os = useOs();
+
+  const defaultView: ViewType = os === "ios" ? "grid" : "table";
+
+  const [view, setView] = useState<ViewType>(defaultView);
   const [rowsPerPage, setRowsPerPage] = useState<string | null>("10");
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useDebouncedState("", 400);
@@ -159,11 +164,11 @@ export default function CredentialsComponent() {
 
   return (
     <div className="flex flex-auto flex-col gap-3 items-center p-4">
-      <div className="flex p-2 justify-between w-full">
-        <h2 className="font-bold text-2xl text-black dark:text-white">
+      <div className="flex flex-col md:flex-row p-2 gap-2 justify-between w-full">
+        <h2 className="font-bold text-lg md:text-2xl text-black dark:text-white">
           My Credentials
         </h2>
-        <div className="flex gap-1 items-center">
+        <div className="flex gap-2 items-center justify-between">
           <section className="flex items-center gap-1 rounded-md bg-heading p-1">
             <Button
               className="w-fit transition-all"
@@ -210,7 +215,7 @@ export default function CredentialsComponent() {
           subHeaderDescription="A list of all the credentials"
         />
       ) : (
-        <div className="w-full grid grid-cols-4 gap-4 my-2">
+        <div className="w-full flex flex-wrap gap-2 md:grid md:grid-cols-4 md:gap-4 my-2">
           {credentials.map((credential) => (
             <CredentialCard key={nanoid()} credential={credential} />
           ))}

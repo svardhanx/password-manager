@@ -1,7 +1,7 @@
 "use client";
 
 import { signupSchema } from "@/lib/schema/loginSchema";
-import { SignupFormFields } from "@/types/formFields";
+import { SignupFormFields } from "@/types/form-fields";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, PasswordInput, TextInput } from "@mantine/core";
 import { KeyRound } from "lucide-react";

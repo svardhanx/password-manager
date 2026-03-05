@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useEffectEvent, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
 import useVault from "@/hooks/use-vault-hook";
 import { closeViewPasswordModal } from "@/store/slices/credentials";
@@ -8,7 +9,6 @@ import { checkPasswordStrength } from "@/utils/checkPasswordStrength";
 import revealPassword from "@/utils/revealPassword";
 import { Button, Modal, PasswordInput, Pill } from "@mantine/core";
 import { Copy } from "lucide-react";
-import { useEffect, useEffectEvent, useState } from "react";
 import toast from "react-hot-toast";
 
 const strengthColors: Record<NonNullable<PasswordStrength>, string> = {

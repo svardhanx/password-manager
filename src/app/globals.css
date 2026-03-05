@@ -3,33 +3,33 @@
 @custom-variant dark (&:where([data-mantine-color-scheme=dark], [data-mantine-color-scheme=dark] *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --primary: #615ae7;
-  --heading: #020817;
-  --sub-heading: #64748b;
-  --success: #018a23;
-  --error: #de3333;
-  --warning: #f59e0b;
-  --info: #2e75d4;
-  --white-border: #e2e8f0;
-  --muted-foreground: oklch(0.556 0 0);
+    --background: #ffffff;
+    --foreground: #171717;
+    --primary: #615ae7;
+    --heading: #020817;
+    --sub-heading: #64748b;
+    --success: #018a23;
+    --error: #de3333;
+    --warning: #f59e0b;
+    --info: #2e75d4;
+    --white-border: #e2e8f0;
+    --muted-foreground: oklch(0.556 0 0);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --color-primary: var(--primary);
-  --color-heading: var(--heading);
-  --color-sub-heading: var(--sub-heading);
-  --color-success: var(--success);
-  --color-error: var(--error);
-  --color-warning: var(--warning);
-  --color-info: var(--info);
-  --color-white-border: var(--white-border);
-  --color-muted-foreground: var(--muted-foreground);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
+    --color-primary: var(--primary);
+    --color-heading: var(--heading);
+    --color-sub-heading: var(--sub-heading);
+    --color-success: var(--success);
+    --color-error: var(--error);
+    --color-warning: var(--warning);
+    --color-info: var(--info);
+    --color-white-border: var(--white-border);
+    --color-muted-foreground: var(--muted-foreground);
 }
 
 /* @media (prefers-color-scheme: dark) {
@@ -47,15 +47,15 @@
 } */
 
 body {
-  /* background: var(--background);
+    /* background: var(--background);
   color: var(--foreground); */
-  font-family: Arial, Helvetica, sans-serif;
-  /* min-height: 100dvh;
+    font-family: Arial, Helvetica, sans-serif;
+    /* min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center; */
 }
 
 .card-base {
-  @apply bg-white dark:bg-foreground rounded-md p-4 border-[0.09375rem] border-white-border shadow;
+    @apply bg-white dark:bg-foreground rounded-md p-4 md:border-[0.09375rem] md:border-white-border shadow;
 }
