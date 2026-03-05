@@ -57,6 +57,8 @@ export default function ViewPasswordModal() {
       return;
     }
 
+    toast.success("text generated");
+
     await navigator.clipboard.writeText(text);
 
     toast.success("Password copied successfully.");

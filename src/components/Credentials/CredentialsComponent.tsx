@@ -198,6 +198,11 @@ export default function CredentialsComponent() {
           </Button>
         </div>
       </div>
+
+      <p className="my-2 font-bold text-heading dark:text-white">
+        defaultView is: {defaultView}{" "}
+      </p>
+
       <TextInput
         defaultValue={search}
         onChange={(e) => setSearch(e.currentTarget.value)}
