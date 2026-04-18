@@ -52,8 +52,6 @@ export default function LoginComponent() {
   const [loading, setLoading] = useState<boolean>(false);
 
   async function signInHandler(data: LoginFormFields) {
-    // console.log("SignIn", data);
-
     await authClientSignIn.email(
       {
         email: data.email,

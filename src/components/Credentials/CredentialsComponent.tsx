@@ -1,15 +1,15 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import { useAppDispatch } from "@/hooks/redux-hooks";
 import { openCredentialModal } from "@/store/slices/credentials";
 import { CredentialType } from "@/types/password-credentials";
-import DataTable from "@/ui/datatable";
 import { Button, TextInput } from "@mantine/core";
+import DataTable from "@/ui/datatable";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { LayoutGrid, List, PlusCircle, Search } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import { useGetUserCredentialsQuery } from "@/hooks/useGetUserCredentialsQuery";
-import { useEffect, useMemo, useState } from "react";
 import ViewPasswordModal from "./Modals/ViewPasswordModal";
 import { useRouter } from "next/navigation";
 import useVault from "@/hooks/use-vault-hook";
@@ -179,7 +179,7 @@ export default function CredentialsComponent() {
               variant={view === "table" ? "primary" : "transparent"}
               onClick={() => setView("table")}
             >
-              <List size={18} />
+              <List size={18} className="text-heading dark:text-white" />
             </Button>
             <Button
               className="w-fit transition-all"
@@ -187,7 +187,7 @@ export default function CredentialsComponent() {
               variant={view === "grid" ? "primary" : "transparent"}
               onClick={() => setView("grid")}
             >
-              <LayoutGrid size={18} />
+              <LayoutGrid size={18} className="text-heading dark:text-white" />
             </Button>
           </section>
 

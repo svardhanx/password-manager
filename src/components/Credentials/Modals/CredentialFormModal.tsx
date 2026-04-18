@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import {
   Button,
   Modal,
@@ -19,9 +20,9 @@ import useVault from "@/hooks/use-vault-hook";
 import encryptData from "@/utils/encrypt";
 import toast from "react-hot-toast";
 import { useAddUserCredentialMutation } from "@/hooks/useAddUserCredentialMutation";
-import { useEffect } from "react";
 import revealPassword from "@/utils/revealPassword";
 import { useUpdateUserCredentialMutation } from "@/hooks/useUpdateUserCredentialMutation";
+import { generatePassword } from "@/utils/generatePassword";
 
 const defaultValues: CredentialType = {
   websiteName: "",
@@ -43,15 +44,11 @@ export default function CredentialFormModal() {
 
   const credentialMode = helperData?.mode;
 
-  // console.log("helperData", helperData);
-
   const dispatch = useAppDispatch();
 
   const { data: session } = useSession();
 
   const { encryptionKey } = useVault();
-
-  // console.log("encryptionKey", encryptionKey);
 
   const addUserCredentialMutation = useAddUserCredentialMutation();
 
@@ -62,6 +59,7 @@ export default function CredentialFormModal() {
     reset,
     formState: { errors },
     handleSubmit,
+    setValue,
   } = useForm<CredentialType>({
     defaultValues,
     resolver: zodResolver(credentialSchema),
@@ -70,6 +68,10 @@ export default function CredentialFormModal() {
   function handleClose() {
     dispatch(closeCredentialModal());
     reset();
+  }
+
+  function handleGeneratePassword() {
+    setValue("password", generatePassword());
   }
 
   async function credentialsSubmitHandler(data: CredentialType) {
@@ -81,10 +83,6 @@ export default function CredentialFormModal() {
     const userId = session?.user.id;
 
     data.userId = userId;
-
-    // console.log("Credentials", data);
-
-    // return;
 
     try {
       const encryptedPassword = await encryptData(data.password, encryptionKey);
@@ -99,10 +97,6 @@ export default function CredentialFormModal() {
         notes: data.notes || "",
         ...(credentialMode === "edit" && { _id: helperData?.data?._id }),
       };
-
-      // console.log("payload", payload);
-
-      // return;
 
       if (credentialMode === "create") {
         await addUserCredentialMutation.mutateAsync(payload);
@@ -216,15 +210,23 @@ export default function CredentialFormModal() {
           name="password"
           render={({ field }) => {
             return (
-              <PasswordInput
-                {...field}
-                label="Password"
-                placeholder="Enter password"
-                error={errors.password?.message}
-                classNames={{
-                  label: "dark:text-white! text-heading!",
-                }}
-              />
+              <div className="flex flex-col gap-1">
+                <PasswordInput
+                  {...field}
+                  label="Password"
+                  placeholder="Enter password"
+                  error={errors.password?.message}
+                  classNames={{
+                    label: "dark:text-white! text-heading!",
+                  }}
+                />
+                <p
+                  className="text-xs cursor-pointer hover:underline underline-offset-2 text-primary"
+                  onClick={handleGeneratePassword}
+                >
+                  Generate a password
+                </p>
+              </div>
             );
           }}
         />

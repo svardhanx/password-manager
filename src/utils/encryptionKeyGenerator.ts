@@ -27,8 +27,6 @@ async function encryptionKeyGenerator(
     ["encrypt", "decrypt"],
   );
 
-  //   console.log(aesKey);
-
   return aesKey;
 }
 

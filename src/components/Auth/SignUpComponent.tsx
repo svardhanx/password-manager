@@ -43,8 +43,6 @@ export default function SignUpComponent() {
   const registerMutation = useRegisterUserMutation();
 
   async function signUpHandler(data: SignupFormFields) {
-    // console.log("SignUp", data);
-
     await authClientSignUp.email(
       {
         name: data.username,
@@ -57,12 +55,11 @@ export default function SignUpComponent() {
           setLoading(true);
         },
         onSuccess: async (ctx) => {
-          // console.log(ctx.data);
           const user = ctx.data.user;
           const salt = nanoid();
           const key = await unlockVault(data.password, salt);
           const encryptedVerifier = await encryptData(user?.id, key);
-          // console.log("encryptedVerifier", encryptedVerifier);
+
           const payload = {
             userId: user?.id as string,
             salt,
