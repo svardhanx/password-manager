@@ -141,6 +141,8 @@ export default function DataTable<TData>({
             alt="No data Image"
             width={300}
             height={300}
+            loading="eager"
+            className="h-auto"
           />
           <p className="text-sub-heading">{noDataText ?? "No Data"}</p>
         </div>

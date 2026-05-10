@@ -1,5 +1,8 @@
+import { connectMongo } from "@/db/dbConfig";
 import { UserVault } from "@/models/userVaultModel";
 import { NextRequest, NextResponse } from "next/server";
+
+await connectMongo();
 
 export async function GET(
   request: NextRequest,
@@ -65,5 +68,14 @@ export async function GET(
     );
   } catch (error) {
     console.error("Error fetching credentials->", error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal server error",
+        errors: error instanceof Error ? error.message : error,
+      },
+      { status: 500 },
+    );
   }
 }

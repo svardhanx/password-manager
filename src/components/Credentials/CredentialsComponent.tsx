@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useAppDispatch } from "@/hooks/redux-hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
 import { openCredentialModal } from "@/store/slices/credentials";
 import { CredentialType } from "@/types/password-credentials";
 import { Button, TextInput } from "@mantine/core";
@@ -22,24 +22,35 @@ import MenuComponent from "../Common/MenuComponent";
 import CredentialCard from "../Common/CredentialCard";
 import { nanoid } from "nanoid";
 import { ViewType } from "@/types/view-type";
+import { useGetUserSecurityQuery } from "@/hooks/useGetUserSecurityQuery";
+import toast from "react-hot-toast";
+import { clearPassword } from "@/store/slices/common";
 
 const columnHelper = createColumnHelper<CredentialType>();
 
 export default function CredentialsComponent() {
   const dispatch = useAppDispatch();
 
+  const { password } = useAppSelector((store) => store.common);
+
   const os = useOs();
 
-  const [view, setView] = useState<ViewType>("table");
+  const [view, setView] = useState<ViewType>(os === "ios" ? "grid" : "table");
   const [rowsPerPage, setRowsPerPage] = useState<string | null>("10");
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useDebouncedState("", 400);
 
   const { data: session } = useSession();
 
+  const { data: userSaltData, status: userSecurityStatus } =
+    useGetUserSecurityQuery(
+      { id: session?.user.id },
+      Boolean(session?.user.id) && Boolean(password),
+    );
+
   const router = useRouter();
 
-  const { isUnlocked } = useVault();
+  const { unlockVault } = useVault();
 
   const userId = session?.user.id;
 
@@ -48,6 +59,7 @@ export default function CredentialsComponent() {
     data: credentialsData,
     dataUpdatedAt: credentialsDataUpdatedAt,
     isFetching: credentialsDataLoading,
+    status: userCredentialStatus,
     refetch: refetchCredentialsData,
   } = useGetUserCredentialsQuery(
     {
@@ -66,9 +78,10 @@ export default function CredentialsComponent() {
   const totalDocs = credentialsData?.data?.totalDocs;
 
   useEffect(() => {
+    if (!userId) return;
+
     refetchCredentialsData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, rowsPerPage, search]);
+  }, [page, rowsPerPage, search, userId, refetchCredentialsData]);
 
   const credentials = useMemo(() => {
     if (!credentialsDataUpdatedAt) return [] as CredentialType[];
@@ -152,18 +165,32 @@ export default function CredentialsComponent() {
   ];
 
   useEffect(() => {
-    if (os === "undetermined") return;
+    if (userSecurityStatus !== "success" && userCredentialStatus !== "success")
+      return;
 
-    if (os === "ios") setView("grid");
-  }, [os]);
-
-  useEffect(() => {
-    if (!session) return;
-
-    if (session && !isUnlocked) {
-      router.push("/auth/unlock");
+    async function unlock() {
+      try {
+        const key = await unlockVault(password, userSaltData.salt);
+        if (!key) throw new Error("Error generating encryption key");
+        router.replace("/credentials");
+      } catch (error) {
+        console.error("error", error);
+        toast.error("Something went wrong. Salt was missing.");
+        router.push("/auth/unlock");
+      } finally {
+        clearPassword();
+      }
     }
-  }, [isUnlocked, session, router]);
+
+    unlock();
+  }, [
+    password,
+    router,
+    userSaltData?.salt,
+    unlockVault,
+    userSecurityStatus,
+    userCredentialStatus,
+  ]);
 
   return (
     <div className="flex flex-auto flex-col gap-3 items-center p-4">

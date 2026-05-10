@@ -8,7 +8,7 @@ const endpoint = apiEndpoints.GET_USER_CREDENTIALS;
 
 export function useGetUserCredentialsQuery(
   queryData?: ApiCallOptions,
-  enabled: boolean = true,
+  enabled: boolean = false,
 ) {
   const url: string | null = buildUrlForGetRequest(endpoint, queryData);
 

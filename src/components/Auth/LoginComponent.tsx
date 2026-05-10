@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import useVault from "@/hooks/use-vault-hook";
-import { useGetUserSecurityQuery } from "@/hooks/useGetUserSecurityQuery";
+import { useState } from "react";
+// import useVault from "@/hooks/use-vault-hook";
+// import { useGetUserSecurityQuery } from "@/hooks/useGetUserSecurityQuery";
 import {
   authClientSignIn,
-  authClientSignOut,
-  useSession,
+  // authClientSignOut,
+  // useSession,
 } from "@/lib/auth-client";
 import { loginSchema } from "@/lib/schema/loginSchema";
 import { LoginFormFields } from "@/types/form-fields";
@@ -19,6 +19,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { useAppDispatch } from "@/hooks/redux-hooks";
+import { setPassword } from "@/store/slices/common";
 
 const defaultValues = {
   email: "",
@@ -26,6 +28,8 @@ const defaultValues = {
 };
 
 export default function LoginComponent() {
+  const dispatch = useAppDispatch();
+
   const {
     control,
     handleSubmit,
@@ -36,18 +40,18 @@ export default function LoginComponent() {
     resolver: zodResolver(loginSchema),
   });
 
-  const [password, setPassword] = useState("");
+  // const [password, setPassword] = useState("");
 
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
 
-  const { data: userSaltData, status } = useGetUserSecurityQuery(
-    { id: session?.user.id },
-    Boolean(session?.user.id) && Boolean(password),
-  );
+  // const { data: userSaltData, status } = useGetUserSecurityQuery(
+  //   { id: session?.user.id },
+  //   Boolean(session?.user.id) && Boolean(password),
+  // );
 
   const router = useRouter();
 
-  const { unlockVault } = useVault();
+  // const { unlockVault } = useVault();
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -63,7 +67,9 @@ export default function LoginComponent() {
           setLoading(true);
         },
         onSuccess: async () => {
-          setPassword(data.password);
+          dispatch(setPassword(data.password));
+          router.replace("/credentials");
+          // setPassword(data.password);
         },
         onError: (ctx: ErrorContext) => {
           toast.error(ctx.error.message);
@@ -73,33 +79,32 @@ export default function LoginComponent() {
     );
   }
 
-  useEffect(() => {
-    if (!userSaltData?.salt || !password || status !== "success") return;
+  // useEffect(() => {
+  //   if (!userSaltData?.salt || !password || status !== "success") return;
 
-    async function unlock() {
-      try {
-        const key = await unlockVault(password, userSaltData.salt);
+  //   async function unlock() {
+  //     try {
+  //       const key = await unlockVault(password, userSaltData.salt);
 
-        if (!key) throw new Error("Error generating encryption key");
+  //       if (!key) throw new Error("Error generating encryption key");
 
-        router.replace("/credentials");
+  //       router.replace("/credentials");
 
-        setLoading(false);
-        reset();
-      } catch (error) {
-        console.error("error", error);
-        toast.error("Something went wrong. Salt was missing.");
-        await authClientSignOut();
-        setLoading(false);
-      } finally {
-        setPassword("");
-      }
-    }
+  //       setLoading(false);
+  //       reset();
+  //     } catch (error) {
+  //       console.error("error", error);
+  //       toast.error("Something went wrong. Salt was missing.");
+  //       await authClientSignOut();
+  //       setLoading(false);
+  //     } finally {
+  //       setPassword("");
+  //     }
+  //   }
 
-    unlock();
+  //   unlock();
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userSaltData?.salt, password, status]);
+  // }, [userSaltData?.salt, password, status]);
 
   return (
     <div className="card-base flex flex-col gap-3 items-center justify-center h-full md:h-fit w-lg p-3">

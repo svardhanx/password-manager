@@ -4,9 +4,9 @@ import { nextCookies } from "better-auth/next-js";
 import Database from "better-sqlite3";
 
 function getDatabase() {
-  const environment = process.env.NODE_ENV;
+  const databaseMode = process.env.DATABASE_MODE;
 
-  if (environment === "development") {
+  if (databaseMode === "local") {
     return new Database("./vault.db");
   }
 

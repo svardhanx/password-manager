@@ -1,8 +1,10 @@
 "use client";
 
+import { useAppDispatch } from "@/hooks/redux-hooks";
 import useVault from "@/hooks/use-vault-hook";
 import { useGetUserSecurityQuery } from "@/hooks/useGetUserSecurityQuery";
 import { authClientSignOut, useSession } from "@/lib/auth-client";
+import { setPassword } from "@/store/slices/common";
 import decryptData from "@/utils/decrypt";
 import { Button, PasswordInput } from "@mantine/core";
 import { KeyRound } from "lucide-react";
@@ -12,9 +14,12 @@ import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 export default function UnlockVaultComponent() {
+  const dispatch = useAppDispatch();
+
   const { control, handleSubmit, reset } = useForm({
     defaultValues: { master_password: "" },
   });
+
   const [loading, setLoading] = useState<boolean>(false);
 
   const router = useRouter();
@@ -45,6 +50,9 @@ export default function UnlockVaultComponent() {
     setLoading(true);
 
     const password = data.master_password;
+
+    dispatch(setPassword(password));
+
     try {
       const key = await unlockVault(password, userSaltData?.salt);
 

@@ -28,15 +28,13 @@ export async function DELETE(request: NextRequest) {
     );
   } catch (error) {
     console.error("Error while deleting a vault item ->", error);
-    if (error instanceof Error) {
-      return NextResponse.json(
-        {
-          message: error.message,
-          success: false,
-          errors: null,
-        },
-        { status: 500 },
-      );
-    }
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal server error",
+        errors: error instanceof Error ? error.message : error,
+      },
+      { status: 500 },
+    );
   }
 }

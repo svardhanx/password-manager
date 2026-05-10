@@ -2,12 +2,7 @@ import mongoose from "mongoose";
 import { Kysely } from "kysely";
 import { LibsqlDialect } from "@libsql/kysely-libsql";
 
-const environment = process.env.NODE_ENV;
-
-const mongoURI: string =
-  environment === "production"
-    ? process.env.MONGO_URI!
-    : process.env.DEV_MONGO_URI!;
+const mongoURI: string = process.env.MONGO_URI!;
 
 export async function connectMongo() {
   try {

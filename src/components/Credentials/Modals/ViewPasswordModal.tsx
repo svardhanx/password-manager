@@ -37,12 +37,21 @@ export default function ViewPasswordModal() {
   }
 
   const password = useEffectEvent(async () => {
-    const password = await revealPassword(helperData?.password, encryptionKey!);
+    try {
+      const password = await revealPassword(
+        helperData?.password,
+        encryptionKey!,
+      );
 
-    if (password) setDecryptedPassword(password);
+      if (password) setDecryptedPassword(password);
 
-    const { strength } = checkPasswordStrength(password);
-    setPasswordStrength(strength);
+      const { strength } = checkPasswordStrength(password);
+      setPasswordStrength(strength);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "error occurred";
+      toast.error(errorMessage);
+    }
   });
 
   async function handleCopyPassword() {
@@ -56,7 +65,9 @@ export default function ViewPasswordModal() {
   useEffect(() => {
     if (!status) return;
 
-    password();
+    (async () => {
+      await password();
+    })();
   }, [status]);
 
   return (
