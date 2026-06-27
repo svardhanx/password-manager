@@ -2,13 +2,12 @@ import { connectMongo } from "@/db/dbConfig";
 import { UserVault } from "@/models/userVaultModel";
 import { NextRequest, NextResponse } from "next/server";
 
-await connectMongo();
-
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
+    await connectMongo();
     const userId = (await params).userId;
 
     const searchParams = request.nextUrl.searchParams;

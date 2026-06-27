@@ -5,9 +5,8 @@ import { userSecuritySchema } from "@/types/user-security-schema";
 import { NextRequest, NextResponse } from "next/server";
 import z from "zod";
 
-await connectMongo();
-
 export async function POST(request: NextRequest) {
+  await connectMongo();
   try {
     const body = await request.json();
 

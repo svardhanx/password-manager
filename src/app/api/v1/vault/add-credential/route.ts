@@ -3,10 +3,9 @@ import vaultItemSchema from "@/lib/schema/vaultItemSchema";
 import { UserVault } from "@/models/userVaultModel";
 import { NextRequest, NextResponse } from "next/server";
 
-await connectMongo();
-
 export async function POST(request: NextRequest) {
   try {
+    await connectMongo();
     const body = await request.json();
 
     const result = vaultItemSchema.safeParse(body);

@@ -2,13 +2,12 @@ import { connectMongo } from "@/db/dbConfig";
 import { UserSecurity } from "@/models/userSecurityModel";
 import { NextRequest, NextResponse } from "next/server";
 
-await connectMongo();
-
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    await connectMongo();
     const id = (await params).id;
 
     if (!id || id === "") {

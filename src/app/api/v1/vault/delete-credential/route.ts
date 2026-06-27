@@ -2,10 +2,9 @@ import { connectMongo } from "@/db/dbConfig";
 import { UserVault } from "@/models/userVaultModel";
 import { NextRequest, NextResponse } from "next/server";
 
-await connectMongo();
-
 export async function DELETE(request: NextRequest) {
   try {
+    await connectMongo();
     const body = await request.json();
 
     if (!body.id) {

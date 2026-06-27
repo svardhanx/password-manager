@@ -9,9 +9,9 @@ import { NextResponse, type NextRequest } from "next/server";
 
 type Response = { success: boolean; message: string };
 
-await connectMongo();
-
 export async function DELETE(request: NextRequest) {
+  await connectMongo();
+
   const { password } = await request.json();
 
   if (!password || password === null || password === undefined) {
