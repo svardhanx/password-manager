@@ -42,7 +42,7 @@ export default function CredentialsComponent() {
 
   const { data: session } = useSession();
 
-  const { data: userSaltData, status: userSecurityStatus } =
+  const { data: userSaltData, dataUpdatedAt: userSaltDataUpdatedAt } =
     useGetUserSecurityQuery(
       { id: session?.user.id },
       Boolean(session?.user.id) && Boolean(password),
@@ -59,7 +59,6 @@ export default function CredentialsComponent() {
     data: credentialsData,
     dataUpdatedAt: credentialsDataUpdatedAt,
     isFetching: credentialsDataLoading,
-    status: userCredentialStatus,
     refetch: refetchCredentialsData,
   } = useGetUserCredentialsQuery(
     {
@@ -165,12 +164,11 @@ export default function CredentialsComponent() {
   ];
 
   useEffect(() => {
-    if (userSecurityStatus !== "success" && userCredentialStatus !== "success")
-      return;
+    if (!userSaltDataUpdatedAt) return;
 
     async function unlock() {
       try {
-        const key = await unlockVault(password, userSaltData.salt);
+        const key = await unlockVault(password, userSaltData?.salt);
         if (!key) throw new Error("Error generating encryption key");
         router.replace("/credentials");
       } catch (error) {
@@ -188,8 +186,7 @@ export default function CredentialsComponent() {
     router,
     userSaltData?.salt,
     unlockVault,
-    userSecurityStatus,
-    userCredentialStatus,
+    userSaltDataUpdatedAt,
   ]);
 
   return (
