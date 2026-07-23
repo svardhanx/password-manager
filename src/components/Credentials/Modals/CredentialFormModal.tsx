@@ -67,7 +67,7 @@ export default function CredentialFormModal() {
 
   function handleClose() {
     dispatch(closeCredentialModal());
-    reset();
+    reset(defaultValues);
   }
 
   function handleGeneratePassword() {
@@ -115,7 +115,7 @@ export default function CredentialFormModal() {
   useEffect(() => {
     const data = helperData?.data;
 
-    if (!credentialMode || data === null) return;
+    if (!credentialMode || data === null || credentialMode === "create") return;
 
     (async function () {
       const password = await revealPassword(data?.password, encryptionKey!);
