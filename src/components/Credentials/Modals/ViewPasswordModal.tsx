@@ -10,6 +10,7 @@ import revealPassword from "@/utils/revealPassword";
 import { Button, Modal, PasswordInput, Pill } from "@mantine/core";
 import { Copy } from "lucide-react";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const strengthColors: Record<NonNullable<PasswordStrength>, string> = {
   Weak: "bg-red-500! hover:bg-red-500!",
@@ -21,6 +22,8 @@ const strengthColors: Record<NonNullable<PasswordStrength>, string> = {
 export default function ViewPasswordModal() {
   const dispatch = useAppDispatch();
 
+  const router = useRouter();
+
   const { status, helperData } = useAppSelector(
     (state) => state.credentials.viewPassword,
   );
@@ -30,7 +33,7 @@ export default function ViewPasswordModal() {
 
   const [decryptedPassword, setDecryptedPassword] = useState<string>("");
 
-  const { encryptionKey } = useVault();
+  const { encryptionKey, lockVault } = useVault();
 
   function handleClose() {
     dispatch(closeViewPasswordModal());
@@ -62,12 +65,22 @@ export default function ViewPasswordModal() {
     handleClose();
   }
 
+  function handleReUnlock() {
+    lockVault();
+    handleClose();
+    router.replace("/auth/unlock");
+  }
+
   useEffect(() => {
     if (!status) return;
 
     (async () => {
       await password();
     })();
+
+    return () => {
+      setDecryptedPassword("");
+    };
   }, [status]);
 
   return (
@@ -87,28 +100,38 @@ export default function ViewPasswordModal() {
         </div>
       }
     >
-      <form className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <h3 className="font-normal text-sm text-heading dark:text-white">
-            Password
-          </h3>
-          <Pill
-            classNames={{
-              root: `text-xs! text-white! ${strengthColors[passwordStrength!]}`,
-            }}
+      {decryptedPassword.length > 0 ? (
+        <div className="flex flex-col gap-2">
+          <section className="flex items-center justify-between">
+            <h3 className="font-normal text-sm text-heading dark:text-white">
+              Password
+            </h3>
+            <Pill
+              classNames={{
+                root: `text-xs! text-white! ${strengthColors[passwordStrength!]}`,
+              }}
+            >
+              {passwordStrength}
+            </Pill>
+          </section>
+          <PasswordInput readOnly defaultValue={decryptedPassword} />
+          <Button
+            type="button"
+            leftSection={<Copy size={14} />}
+            onClick={handleCopyPassword}
           >
-            {passwordStrength}
-          </Pill>
+            Copy Password
+          </Button>
         </div>
-        <PasswordInput readOnly defaultValue={decryptedPassword} />
-        <Button
-          type="button"
-          leftSection={<Copy size={14} />}
-          onClick={handleCopyPassword}
-        >
-          Copy Password
-        </Button>
-      </form>
+      ) : (
+        <p className="text-sm dark:text-white text-black text-center py-2">
+          Failed to decrypt password.{" "}
+          <span className="underline cursor-pointer" onClick={handleReUnlock}>
+            Re-unlock
+          </span>{" "}
+          vault.
+        </p>
+      )}
     </Modal>
   );
 }

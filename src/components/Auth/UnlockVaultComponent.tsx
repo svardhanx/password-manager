@@ -112,7 +112,7 @@ export default function UnlockVaultComponent() {
         </Button>
       </form>
       <div className="text-sm flex items-center p-1 justify-center w-full gap-2">
-        <span>Not {user?.name}? </span>
+        <span className="dark:text-white text-black">Not {user?.name}? </span>
         <p
           onClick={handleSignOut}
           className="text-primary hover:underline underline-offset-3"

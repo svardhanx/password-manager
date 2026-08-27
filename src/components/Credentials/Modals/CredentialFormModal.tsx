@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   Modal,
@@ -23,6 +23,7 @@ import { useAddUserCredentialMutation } from "@/hooks/useAddUserCredentialMutati
 import revealPassword from "@/utils/revealPassword";
 import { useUpdateUserCredentialMutation } from "@/hooks/useUpdateUserCredentialMutation";
 import { generatePassword } from "@/utils/generatePassword";
+import { useRouter } from "next/navigation";
 
 const defaultValues: CredentialType = {
   websiteName: "",
@@ -34,6 +35,11 @@ const defaultValues: CredentialType = {
 };
 
 export default function CredentialFormModal() {
+  const [hasPasswordEncryptionFailed, setHasPasswordEncryptionFailed] =
+    useState<boolean>(false);
+
+  const router = useRouter();
+
   const status = useAppSelector(
     (state) => state.credentials.credentialModal.status,
   );
@@ -48,7 +54,7 @@ export default function CredentialFormModal() {
 
   const { data: session } = useSession();
 
-  const { encryptionKey } = useVault();
+  const { encryptionKey, lockVault } = useVault();
 
   const addUserCredentialMutation = useAddUserCredentialMutation();
 
@@ -72,6 +78,12 @@ export default function CredentialFormModal() {
 
   function handleGeneratePassword() {
     setValue("password", generatePassword());
+  }
+
+  function handleReUnlock() {
+    lockVault();
+    handleClose();
+    router.replace("/auth/unlock");
   }
 
   async function credentialsSubmitHandler(data: CredentialType) {
@@ -118,13 +130,20 @@ export default function CredentialFormModal() {
     if (!credentialMode || data === null || credentialMode === "create") return;
 
     (async function () {
-      const password = await revealPassword(data?.password, encryptionKey!);
-      const resetData = { ...data, password };
-      reset(resetData);
+      try {
+        const password = await revealPassword(data?.password, encryptionKey!);
+        const resetData = { ...data, password };
+        reset(resetData);
+      } catch (error) {
+        console.error("error", error);
+        setHasPasswordEncryptionFailed(true);
+      }
     })();
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [credentialMode, helperData?.data]);
+    return () => {
+      setHasPasswordEncryptionFailed(false);
+    };
+  }, [credentialMode, encryptionKey, helperData?.data, reset]);
 
   return (
     <Modal
@@ -149,134 +168,144 @@ export default function CredentialFormModal() {
         </div>
       }
     >
-      <form
-        className="flex flex-col gap-2"
-        onSubmit={handleSubmit(credentialsSubmitHandler)}
-      >
-        <Controller
-          control={control}
-          name="websiteName"
-          render={({ field }) => {
-            return (
-              <TextInput
-                {...field}
-                label="Website Name"
-                placeholder="Enter the website name"
-                error={errors.websiteName?.message}
-                classNames={{
-                  label: "dark:text-white! text-heading!",
-                }}
-              />
-            );
-          }}
-        />
-        <Controller
-          control={control}
-          name="websiteLink"
-          render={({ field }) => {
-            return (
-              <TextInput
-                {...field}
-                label="Website Link (optional)"
-                placeholder="Enter the website link"
-                error={errors.websiteLink?.message}
-                classNames={{
-                  label: "dark:text-white! text-heading!",
-                }}
-              />
-            );
-          }}
-        />
-        <Controller
-          control={control}
-          name="email"
-          render={({ field }) => {
-            return (
-              <TextInput
-                {...field}
-                label="Email address"
-                placeholder="Enter email address"
-                type="email"
-                error={errors.email?.message}
-                classNames={{
-                  label: "dark:text-white! text-heading!",
-                }}
-              />
-            );
-          }}
-        />
-        <Controller
-          control={control}
-          name="password"
-          render={({ field }) => {
-            return (
-              <div className="flex flex-col gap-1">
-                <PasswordInput
+      {hasPasswordEncryptionFailed ? (
+        <p className="text-sm dark:text-white text-black text-center py-2">
+          Failed to decrypt password.{" "}
+          <span className="underline cursor-pointer" onClick={handleReUnlock}>
+            Re-unlock
+          </span>{" "}
+          vault.
+        </p>
+      ) : (
+        <form
+          className="flex flex-col gap-2"
+          onSubmit={handleSubmit(credentialsSubmitHandler)}
+        >
+          <Controller
+            control={control}
+            name="websiteName"
+            render={({ field }) => {
+              return (
+                <TextInput
                   {...field}
-                  label="Password"
-                  placeholder="Enter password"
-                  error={errors.password?.message}
+                  label="Website Name"
+                  placeholder="Enter the website name"
+                  error={errors.websiteName?.message}
                   classNames={{
                     label: "dark:text-white! text-heading!",
                   }}
                 />
-                <p
-                  className="text-xs cursor-pointer hover:underline underline-offset-2 text-primary"
-                  onClick={handleGeneratePassword}
-                >
-                  Generate a password
-                </p>
-              </div>
-            );
-          }}
-        />
-        <Controller
-          control={control}
-          name="username"
-          render={({ field }) => {
-            return (
-              <TextInput
-                {...field}
-                label="Username (optional)"
-                placeholder="Enter username"
-                error={errors.username?.message}
-                classNames={{
-                  label: "dark:text-white! text-heading!",
-                }}
-              />
-            );
-          }}
-        />
-        <Controller
-          control={control}
-          name="notes"
-          render={({ field }) => {
-            return (
-              <Textarea
-                {...field}
-                label="Notes (optional)"
-                placeholder="Enter any notes..."
-                error={errors.notes?.message}
-                autosize
-                classNames={{
-                  label: "dark:text-white! text-heading!",
-                }}
-              />
-            );
-          }}
-        />
-        <div className="flex p-2 justify-end w-full">
-          <Button
-            type="submit"
-            loading={
-              addUserCredentialMutation.isPending ||
-              updateUserCredentialMutation.isPending
-            }
-          >
-            {credentialMode === "create" ? "Submit" : "Update Entry"}
-          </Button>
-        </div>
-      </form>
+              );
+            }}
+          />
+          <Controller
+            control={control}
+            name="websiteLink"
+            render={({ field }) => {
+              return (
+                <TextInput
+                  {...field}
+                  label="Website Link (optional)"
+                  placeholder="Enter the website link"
+                  error={errors.websiteLink?.message}
+                  classNames={{
+                    label: "dark:text-white! text-heading!",
+                  }}
+                />
+              );
+            }}
+          />
+          <Controller
+            control={control}
+            name="email"
+            render={({ field }) => {
+              return (
+                <TextInput
+                  {...field}
+                  label="Email address"
+                  placeholder="Enter email address"
+                  type="email"
+                  error={errors.email?.message}
+                  classNames={{
+                    label: "dark:text-white! text-heading!",
+                  }}
+                />
+              );
+            }}
+          />
+          <Controller
+            control={control}
+            name="password"
+            render={({ field }) => {
+              return (
+                <div className="flex flex-col gap-1">
+                  <PasswordInput
+                    {...field}
+                    label="Password"
+                    placeholder="Enter password"
+                    error={errors.password?.message}
+                    classNames={{
+                      label: "dark:text-white! text-heading!",
+                    }}
+                  />
+                  <p
+                    className="text-xs cursor-pointer hover:underline underline-offset-2 text-primary"
+                    onClick={handleGeneratePassword}
+                  >
+                    Generate a password
+                  </p>
+                </div>
+              );
+            }}
+          />
+          <Controller
+            control={control}
+            name="username"
+            render={({ field }) => {
+              return (
+                <TextInput
+                  {...field}
+                  label="Username (optional)"
+                  placeholder="Enter username"
+                  error={errors.username?.message}
+                  classNames={{
+                    label: "dark:text-white! text-heading!",
+                  }}
+                />
+              );
+            }}
+          />
+          <Controller
+            control={control}
+            name="notes"
+            render={({ field }) => {
+              return (
+                <Textarea
+                  {...field}
+                  label="Notes (optional)"
+                  placeholder="Enter any notes..."
+                  error={errors.notes?.message}
+                  autosize
+                  classNames={{
+                    label: "dark:text-white! text-heading!",
+                  }}
+                />
+              );
+            }}
+          />
+          <div className="flex p-2 justify-end w-full">
+            <Button
+              type="submit"
+              loading={
+                addUserCredentialMutation.isPending ||
+                updateUserCredentialMutation.isPending
+              }
+            >
+              {credentialMode === "create" ? "Submit" : "Update Entry"}
+            </Button>
+          </div>
+        </form>
+      )}
     </Modal>
   );
 }
