@@ -16,7 +16,7 @@ export default function NotFound() {
         loading="eager"
       />
       <div className="text-light-black-primary text-sm flex flex-col items-center">
-        <h2 className="text-2xl font-medium text-heading">
+        <h2 className="text-2xl font-medium text-heading dark:text-white">
           Destination Not Found.
         </h2>
         <p className="font-normal text-sub-heading">

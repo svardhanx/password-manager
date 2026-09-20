@@ -7,7 +7,7 @@ import { CredentialType } from "@/types/password-credentials";
 import { Button, TextInput } from "@mantine/core";
 import DataTable from "@/ui/datatable";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
-import { LayoutGrid, List, PlusCircle, Search } from "lucide-react";
+import { CircleX, LayoutGrid, List, PlusCircle, Search } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import { useGetUserCredentialsQuery } from "@/hooks/useGetUserCredentialsQuery";
 import ViewPasswordModal from "./Modals/ViewPasswordModal";
@@ -25,6 +25,7 @@ import { ViewType } from "@/types/view-type";
 import { useGetUserSecurityQuery } from "@/hooks/useGetUserSecurityQuery";
 import toast from "react-hot-toast";
 import { clearPassword } from "@/store/slices/common";
+import Link from "next/link";
 
 const columnHelper = createColumnHelper<CredentialType>();
 
@@ -38,6 +39,7 @@ export default function CredentialsComponent() {
   const [view, setView] = useState<ViewType>(os === "ios" ? "grid" : "table");
   const [rowsPerPage, setRowsPerPage] = useState<string | null>("10");
   const [page, setPage] = useState<number>(1);
+
   const [search, setSearch] = useDebouncedState("", 400);
 
   const { data: session } = useSession();
@@ -103,6 +105,14 @@ export default function CredentialsComponent() {
     }));
   }, [credentialsDataUpdatedAt, credentialsData]);
 
+  async function copyEmailAddressToClipboard(email: string) {
+    if (email === "" || !email) return;
+
+    await navigator.clipboard.writeText(email);
+
+    toast.success("email address copied");
+  }
+
   const columns: ColumnDef<CredentialType>[] = [
     columnHelper.accessor("websiteLink", {
       header: "Website Link",
@@ -113,7 +123,15 @@ export default function CredentialsComponent() {
           return "---";
         }
 
-        return websiteLink;
+        return (
+          <Link
+            href={websiteLink}
+            target="_blank"
+            className="cursor-pointer hover:underline"
+          >
+            {websiteLink}
+          </Link>
+        );
       },
     }) as ColumnDef<CredentialType>,
     columnHelper.accessor("websiteName", {
@@ -121,6 +139,19 @@ export default function CredentialsComponent() {
     }) as ColumnDef<CredentialType>,
     columnHelper.accessor("email", {
       header: "Email",
+      cell: (info) => {
+        const value = info.getValue();
+
+        return (
+          <p
+            className="cursor-pointer"
+            title="Click to copy"
+            onClick={() => copyEmailAddressToClipboard(value)}
+          >
+            {value ? value : "---"}
+          </p>
+        );
+      },
     }) as ColumnDef<CredentialType>,
     columnHelper.accessor("password", {
       header: "Password",

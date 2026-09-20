@@ -23,11 +23,9 @@ const userSecuritySchema = new mongoose.Schema(
       keyLength: { type: Number, required: true },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-export const UserSecurity = mongoose.model(
-  "User_Security",
-  userSecuritySchema,
-  "user_security"
-);
+export const UserSecurity =
+  mongoose.models.User_Security ||
+  mongoose.model("User_Security", userSecuritySchema, "user_security");
