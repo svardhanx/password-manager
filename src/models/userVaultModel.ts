@@ -46,7 +46,7 @@ userVaultSchema.index({ websiteName: "text" });
 userVaultSchema.plugin(mongoosePaginate);
 
 export const UserVault =
-  mongoose.models.User_Vault ||
+  (mongoose.models.User_Vault as mongoose.PaginateModel<VaultDocument>) ||
   mongoose.model<VaultDocument, mongoose.PaginateModel<VaultDocument>>(
     "User_Vault",
     userVaultSchema,
