@@ -7,7 +7,7 @@ import { CredentialType } from "@/types/password-credentials";
 import { Button, TextInput } from "@mantine/core";
 import DataTable from "@/ui/datatable";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
-import { CircleX, LayoutGrid, List, PlusCircle, Search } from "lucide-react";
+import { LayoutGrid, List, PlusCircle, Search } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import { useGetUserCredentialsQuery } from "@/hooks/useGetUserCredentialsQuery";
 import ViewPasswordModal from "./Modals/ViewPasswordModal";
